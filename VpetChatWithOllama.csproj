@@ -1,14 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>net8.0-windows</TargetFramework>
-	  <OutputType>Library</OutputType>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	  <UseWPF>true</UseWPF>
-	  <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>Library</OutputType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<UseWPF>true</UseWPF>
+		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="30001_ChatWithOllama\**" />
+		<EmbeddedResource Remove="30001_ChatWithOllama\**" />
+		<None Remove="30001_ChatWithOllama\**" />
+		<Page Remove="30001_ChatWithOllama\**" />
+	</ItemGroup>
+	
 	<ItemGroup>
 
 		<PackageReference Include="VPet-Simulator.Windows.Interface" Version="1.1.0.40" />

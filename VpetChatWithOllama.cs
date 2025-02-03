@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,12 +8,20 @@ using VPet_Simulator.Windows.Interface;
 
 namespace VpetChatWithOllama
 {
-    public class VpetChatWithOllama : MainPlugin
+
+    public class ChatWithOllama : MainPlugin
     {
-        public VpetChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
+        public OllamaChatCore COllama;
+        public ChatOllamaAPI COllamaAPI;
+        public ChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
         public override void LoadPlugin()
         {
             MW.TalkAPI.Add(new ChatOllamaAPI(this));
+
+            if (File.Exists(ExtensionValue.BaseDirectory + @"\ChatGPTSetting.json"))
+                COllama = new OllamaChatCore(File.ReadAllText(ExtensionValue.BaseDirectory + @"\ChatGPTSetting.json"));
+
+
         }
 
         public override void Save()
@@ -26,26 +35,16 @@ namespace VpetChatWithOllama
 
     public class ChatOllamaAPI: TalkBox
     {
-        OllamaChatCore OllamaChatCorer;
-        public ChatOllamaAPI(VpetChatWithOllama mainPlugin) : base(mainPlugin)
+        public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
-            try
-            {
-                OllamaChatCorer = new OllamaChatCore(prompt: "你是一只猫娘,你叫爱丽丝");
-
-            }
-            catch (Exception e)
-            {
-                DisplayThinkToSayRnd("OllamaChatCore初始化失败");
-            }
             Plugin = mainPlugin;
         }
-        protected VpetChatWithOllama Plugin;
+        protected ChatWithOllama Plugin;
         public override string APIName => "ChatOllama";
         public override async void Responded(string text)
         {
             DisplayThink();
-            String res =  await OllamaChatCorer.chat(text);
+            String res =  await Plugin.COllama.Chat(text);
 
             DisplayThinkToSayRnd(res);
         }
@@ -53,5 +52,6 @@ namespace VpetChatWithOllama
         {
          
         }
+
     }
 }

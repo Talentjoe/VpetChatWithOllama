@@ -6,9 +6,8 @@ using Newtonsoft.Json.Linq;
 
 namespace VpetChatWithOllama
 {
-    class OllamaChatCore
+    public class OllamaChatCore
     {
-
         private String moduleName;
         private String terminal;
         private bool supportTool;
@@ -16,15 +15,27 @@ namespace VpetChatWithOllama
         private HttpClient sharedClient;
         private List<Dictionary<String, String>> chatingHistory;
         private String prompt;
+        private List<Func<String>> costomizedPropts;
         public long tockenCount { get; private set; }
         public long promptCount { get; private set; }
 
+        /// <summary>
+        /// Initialize the chat with ollama terminal
+        /// </summary>
+        /// <param name="prompt">The system prompt</param>
+        /// <param name="moduleName">The module to run with</param>
+        /// <param name="terminal">Ollama api address and port</param>
+        /// <param name="supportTool">If use tool to suport more features</param>
+        /// <param name="AddTime">Add time to the prompt</param>
+        /// <param name="chatHistory">Previous chat</param>
         public OllamaChatCore(
             String prompt = "",
             String moduleName = "Qwen2.5:7b",
             String terminal = "http://localhost:11434/",
             bool supportTool = true,
-            bool AddTime = true
+            bool AddTime = true,
+            List<Func<String>> costomizedPropts = null,
+            String chatHistory = ""
         )
         {
             this.moduleName = moduleName.ToLower();
@@ -33,6 +44,7 @@ namespace VpetChatWithOllama
             this.chatingHistory = new List<Dictionary<String, String>>();
             this.prompt = prompt;
             this.AddTimeToPrompt = AddTime;
+            this.costomizedPropts = costomizedPropts;
 
             if (prompt != "")
             {
@@ -47,11 +59,10 @@ namespace VpetChatWithOllama
                 BaseAddress = new Uri(terminal),
             };
 
-            //if (!CheckModuleExist().Result)
-            //{
-            //    throw new Exception("Module not found");
-            //}
         }
+        /// <summary>
+        /// The structure to deserialize the response from the chat API
+        /// </summary>
         struct ChatResponse
         {
             public Dictionary<String, String> message { get; set; }
@@ -59,6 +70,9 @@ namespace VpetChatWithOllama
             public int eval_count { get; set; }
         }
 
+        /// <summary>
+        /// The structure to deserialize the response from the module exist API
+        /// </summary>
         struct ModuleExistResponse
         {
             public struct Module
@@ -68,22 +82,23 @@ namespace VpetChatWithOllama
             }
             public List<Module> models { get; set; }
         }
-
-        private async Task<bool> CheckModuleExist()
+        /// <summary>
+        /// Get modules from the ollama terminal
+        /// </summary>
+        /// <returns>The list of module name</returns>
+        /// <exception cref="Exception">When not able to get the response</exception>
+        public List<String> getAllModules()
         {
             try
             {
-                JObject modules = await GetResponse(null, "api/tags");
+                JObject modules = GetResponse(null, "api/tags").Result;
+                List<String> moduleNames = new List<String>();
 
                 foreach (var module in modules["models"])
                 {
-                    String currentName = ((String)module["name"]).ToLower();
-                    if (currentName == moduleName)
-                    {
-                        return true;
-                    }
+                    moduleNames.Add(((String)module["name"]).ToLower());
                 }
-                return false;
+                return moduleNames;
 
             }
             catch (Exception e)
@@ -91,20 +106,32 @@ namespace VpetChatWithOllama
                 throw new Exception("Failed to get modules, Check if ollama is running.");
             }
         }
-
+        /// <summary>
+        /// adding system prompt to the chat history
+        /// </summary>
+        /// <returns>
+        ///     a dictionary with role and content
+        /// </returns>
         private Dictionary<String, String> SystemPrompt()
         {
             StringBuilder systemPrompt = new StringBuilder();
             if (AddTimeToPrompt)
             {
                 systemPrompt.AppendLine("current time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
+            }
+            foreach (var costomizedPropt in costomizedPropts)
+            {
+                systemPrompt.AppendLine(costomizedPropt());
             }
 
             return new Dictionary<String, String>() { { "role", "system" }, { "content", systemPrompt.ToString() } };
         }
-
-        public async Task<String> chat(String nextSentence)
+        /// <summary>
+        /// give the next sentence to the chat API, with history included
+        /// </summary>
+        /// <param name="nextSentence"> Next sentence user inputs</param>
+        /// <returns></returns>
+        public async Task<String> Chat(String nextSentence)
         {
 
             chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
@@ -121,7 +148,6 @@ namespace VpetChatWithOllama
                 Encoding.UTF8,
                 "application/json");
 
-            //ChatResponse chatResponse = await GetResponse<ChatResponse>(jsonContent, "api/chat");
             JObject chatResponseJson = await GetResponse(jsonContent, "api/chat");
 
             ChatResponse chatResponse = chatResponseJson.ToObject<ChatResponse>();
@@ -164,6 +190,16 @@ namespace VpetChatWithOllama
             //T formatedResponse = JsonConvert.DeserializeObject<T>(jsonResponse);
 
             return jobject;
+        }
+
+        public String saveHistory()
+        {
+            return JsonConvert.SerializeObject(chatingHistory);
+        }
+
+        public void changeModule(String moduleName)
+        {
+            this.moduleName = moduleName;
         }
     }
 }
