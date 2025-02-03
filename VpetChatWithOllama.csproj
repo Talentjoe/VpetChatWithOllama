@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net8.0-windows</TargetFramework>
+	  <OutputType>Library</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <UseWPF>true</UseWPF>
+	  <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+  </PropertyGroup>
+	<ItemGroup>
+
+		<PackageReference Include="VPet-Simulator.Windows.Interface" Version="1.1.0.40" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+</Project>
