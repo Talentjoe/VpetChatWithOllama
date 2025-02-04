@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VPet_Simulator.Windows.Interface;
 using VpetChatWithOllama;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace VPet.Plugin.ChatGPTPlugin
 {
@@ -25,10 +27,14 @@ namespace VPet.Plugin.ChatGPTPlugin
     /// </summary>
     public partial class winSetting : Window
     {
+
         ChatWithOllama plugin;
         long totalused = 0;
         public winSetting(ChatWithOllama plugin)
         {
+            Resources = Application.Current.Resources;
+            this.plugin = plugin;
+
 
         }
         private void btnSave_Click(object sender, RoutedEventArgs e)

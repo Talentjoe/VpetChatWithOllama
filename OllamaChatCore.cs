@@ -51,6 +51,11 @@ namespace VpetChatWithOllama
                 chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
             }
 
+            if(chatHistory != "")
+            {
+                chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(chatHistory);
+            }
+
             this.tockenCount = 0;
             this.promptCount = 0;
 

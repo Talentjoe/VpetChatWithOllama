@@ -39,7 +39,6 @@
         <TextBlock Grid.Row="7" Text="{ll:Str 累计花费}" VerticalAlignment="Center" />
         <TextBlock Grid.Row="8" Text="{ll:Str 历史记录}" VerticalAlignment="Center" />
         <TextBlock Grid.Row="9" Text="{ll:Str 保留记录}" VerticalAlignment="Center" />
-        <TextBlock Grid.Row="10" Text="{ll:Str Token显示}" VerticalAlignment="Center" />
         <TextBlock Grid.Row="11" Text="{ll:Str 完成设置}" VerticalAlignment="Center" />
         <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                 FontSize="16" pu:TextBoxHelper.Watermark="{ll:Str 'Ollama API 链接 若在本地运行 一般为 https://localhost:11434/'}"
@@ -80,8 +79,6 @@
                 ToolTip="{ll:Str '累计在此花费的Token个数 1千Token=$0.02'}" />
         <pu:NumberInput x:Name="niKeepHistory" Grid.Row="9" Grid.Column="2" Value="10"
                 ToolTip="{ll:Str '超过该值后自动删除最早的聊天记录'}" Minimum="0" VerticalAlignment="Center" />
-        <pu:Switch x:Name="swShowToken" Grid.Row="10" Grid.Column="2" VerticalAlignment="Center"
-                Content="{ll:Str '在聊天记录中显示消耗的Token数量'}" />
         <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="{ll:Str 保存设置}" Margin="4,4,4,4"
                 Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11"
                 Click="btnSave_Click" />
