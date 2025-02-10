@@ -119,15 +119,16 @@ namespace VpetChatWithOllama
         /// </returns>
         private Dictionary<String, String> SystemPrompt()
         {
-            StringBuilder systemPrompt = new StringBuilder();
+            StringBuilder systemPrompt = new StringBuilder("");
             if (AddTimeToPrompt)
             {
                 systemPrompt.AppendLine("current time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             }
-            foreach (var costomizedPropt in costomizedPropts)
-            {
-                systemPrompt.AppendLine(costomizedPropt());
-            }
+            if(costomizedPropts != null)
+                foreach (var costomizedPropt in costomizedPropts)
+                {
+                    systemPrompt.AppendLine(costomizedPropt());
+                }
 
             return new Dictionary<String, String>() { { "role", "system" }, { "content", systemPrompt.ToString() } };
         }
