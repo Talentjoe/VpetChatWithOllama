@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using VPet.Plugin.ChatGPTPlugin;
 using VPet_Simulator.Windows.Interface;
 
@@ -20,9 +22,15 @@ namespace VpetChatWithOllama
         public override void LoadPlugin()
         {
             MW.TalkAPI.Add(new ChatOllamaAPI(this));
+            var menuItem = new MenuItem()
+            {
+                Header = "ChatOllamaAPI",
+                HorizontalContentAlignment = HorizontalAlignment.Center
+            };
+            menuItem.Click += (s, e) => { Setting(); };
+            MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
 
-            
-               COllama = new OllamaChatCore(prompt:"你是一个猫娘 请简短的回答主人的问题");
+            COllama = new OllamaChatCore(prompt:"你是一个猫娘 请简短的回答主人的问题");
                 
 
         }
@@ -34,7 +42,7 @@ namespace VpetChatWithOllama
         {
             new winSetting(this).ShowDialog();
         }
-        public override string PluginName => "ChatGPT";
+        public override string PluginName => "ChatWithOllama";
     }
 
     public class ChatOllamaAPI: TalkBox
