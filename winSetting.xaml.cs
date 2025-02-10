@@ -20,27 +20,50 @@ using VpetChatWithOllama;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
-namespace VPet.Plugin.ChatGPTPlugin
+namespace VpetChatWithOllama
 {
-    /// <summary>
-    /// winSetting.xaml 的交互逻辑
-    /// </summary>
     public partial class winSetting : Window
     {
-
         ChatWithOllama plugin;
-        long totalused = 0;
         public winSetting(ChatWithOllama plugin)
         {
-            Resources = Application.Current.Resources;
+            InitializeComponent();
             this.plugin = plugin;
-
-
+            cbModel.ItemsSource = _models; // Bind models to ComboBox
         }
+        // Observable collection for dynamic model options
+        private ObservableCollection<string> _models = new ObservableCollection<string>
+        {
+            "gpt-3.5-turbo",
+            "gpt-4-turbo",
+            "gpt-4"
+        };
+
+
+        // Example method to dynamically add a model
+        public void AddModel(string modelName)
+        {
+            if (!_models.Contains(modelName))
+            {
+                _models.Add(modelName);
+            }
+        }
+
+        // Save button logic
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
+            // Extract and save settings
+            var settings = new PluginInformations.PluginSettings
+            {
+                url = tbAPIURL.Text,
+                moduleName = cbModel.SelectedItem?.ToString(),
+                prompt = tbPromptTemplate.Text,
+                historyLength = (int)niHistoryLength.Value,
+                chatHistory = tbChatHistory.Text
+            };
 
+            // Handle saving settings logic here
+            MessageBox.Show("Settings saved successfully!");
         }
     }
 }
-

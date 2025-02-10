@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VpetChatWithOllama", "VpetChatWithOllama.csproj", "{BA6BA503-F9E9-4A28-93EE-6E5352C203B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pre-test", "..\pre-testC#\pre-test\pre-test\pre-test.csproj", "{36787A75-AB4C-4C8D-B6FD-2AC55DBEF71F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VPet.Plugin.ChatGPTPlugin", "..\VpetPlug\VPet.Plugin.ChatGPT\VPet.Plugin.ChatGPTPlugin.csproj", "{5716242E-7890-46A9-B022-F4AD61800218}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA6BA503-F9E9-4A28-93EE-6E5352C203B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA6BA503-F9E9-4A28-93EE-6E5352C203B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA6BA503-F9E9-4A28-93EE-6E5352C203B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA6BA503-F9E9-4A28-93EE-6E5352C203B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36787A75-AB4C-4C8D-B6FD-2AC55DBEF71F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36787A75-AB4C-4C8D-B6FD-2AC55DBEF71F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36787A75-AB4C-4C8D-B6FD-2AC55DBEF71F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36787A75-AB4C-4C8D-B6FD-2AC55DBEF71F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5716242E-7890-46A9-B022-F4AD61800218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5716242E-7890-46A9-B022-F4AD61800218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5716242E-7890-46A9-B022-F4AD61800218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5716242E-7890-46A9-B022-F4AD61800218}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D86C8BFB-94EF-4A40-B121-B3CA1D67E3F3}
+	EndGlobalSection
+EndGlobal

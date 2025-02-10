@@ -21,11 +21,8 @@ namespace VpetChatWithOllama
         {
             MW.TalkAPI.Add(new ChatOllamaAPI(this));
 
-            if (File.Exists(ExtensionValue.BaseDirectory + @"\ChatGPTSetting.json"))
-            {
-                COllama = new OllamaChatCore(File.ReadAllText(ExtensionValue.BaseDirectory + @"\ChatGPTSetting.json"));
-
-            }
+            
+               COllama = new OllamaChatCore(prompt:"你是一个猫娘 请简短的回答主人的问题");
                 
 
         }
@@ -51,13 +48,17 @@ namespace VpetChatWithOllama
         public override async void Responded(string text)
         {
             DisplayThink();
+            if(Plugin.COllama == null)
+            {
+                DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
+                return;
+            }
             String res =  await Plugin.COllama.Chat(text);
 
             DisplayThinkToSayRnd(res);
         }
-        public override void Setting()
-        {
-        }
+        public override void Setting() => Plugin.Setting();
+        
 
     }
 
@@ -66,7 +67,7 @@ namespace VpetChatWithOllama
         public struct PluginSettings
         {
             public string url;
-            public bool moduleName;
+            public string moduleName;
             public string prompt;
             public bool addTimeAsPrompt;
             public string chatHistory;
