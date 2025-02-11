@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,11 +18,22 @@ namespace VpetChatWithOllama
     {
         public OllamaChatCore COllama;
         public ChatOllamaAPI COllamaAPI;
-        public PluginInformations.PluginSettings settings;
+        private PluginInformations.PluginSettings _settings;
+        public PluginInformations.PluginSettings settings {
+            set {  _settings = value; COllama = new OllamaChatCore(value);}
+            get { return _settings; }
+        }
 
         public ChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
         public override void LoadPlugin()
         {
+
+            if (File.Exists(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"))
+                settings =  PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
+
+            else
+                settings = new PluginInformations.PluginSettings();
+
             MW.TalkAPI.Add(new ChatOllamaAPI(this));
             var menuItem = new MenuItem()
             {
@@ -29,14 +42,12 @@ namespace VpetChatWithOllama
             };
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
-
-            COllama = new OllamaChatCore(prompt:"你是一个猫娘 请简短的回答主人的问题");
-                
-
         }
 
         public override void Save()
         {
+            _settings.chatHistory = COllama.saveHistory();
+             File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
         }
         public override void Setting()
         {
@@ -61,9 +72,16 @@ namespace VpetChatWithOllama
                 DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
                 return;
             }
-            String res =  await Plugin.COllama.Chat(text);
+            try
+            {
+                String res =  await Plugin.COllama.Chat(text);
+                DisplayThinkToSayRnd(res);
+            }
+            catch (Exception ex)
+            {
+                DisplayThinkToSayRnd("ChatOllama API 出现错误: " + ex.Message);
+            }
 
-            DisplayThinkToSayRnd(res);
         }
         public override void Setting() => Plugin.Setting();
         
@@ -72,16 +90,30 @@ namespace VpetChatWithOllama
 
     public class  PluginInformations
     {
-        public struct PluginSettings
+        public class PluginSettings
         {
             public string url;
             public string moduleName;
             public string prompt;
             public bool addTimeAsPrompt;
             public string chatHistory;
-            public int historyLength;
-            public int supportTool;
+            public bool supportTool;
+
+            public PluginSettings()
+            {
+                this.url = "http://localhost:11434/";
+                this.moduleName = "";
+                this.prompt = "";
+                this.addTimeAsPrompt = true;
+                this.chatHistory = "[]";
+                this.supportTool = false;
+            }
         }
-        
+
+        public static PluginSettings getFromJson(string json)
+        {
+            var jobj = JObject.Parse(json);
+            return jobj.ToObject<PluginSettings>();
+        }
     }
 }

@@ -1,7 +1,11 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Windows.Controls;
+using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static VpetChatWithOllama.PluginInformations;
 
 
 namespace VpetChatWithOllama
@@ -65,6 +69,32 @@ namespace VpetChatWithOllama
             };
 
         }
+
+        public OllamaChatCore(PluginInformations.PluginSettings settings)
+        {
+            this.moduleName = settings.moduleName;
+            this.terminal = settings.url;
+            this.supportTool = false;
+            this.chatingHistory = new List<Dictionary<String, String>>();
+            this.prompt = settings.prompt;
+            this.AddTimeToPrompt = settings.addTimeAsPrompt;
+            this.tockenCount = 0;
+            this.promptCount = 0;
+            this.costomizedPropts = new List<Func<String>>();
+
+            sharedClient = new()
+            {
+                BaseAddress = new Uri(terminal),
+            };
+            if (prompt != "")
+            {
+                chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
+            }
+            if (settings.chatHistory != "")
+            {
+                chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(settings.chatHistory);
+            }
+        }
         /// <summary>
         /// The structure to deserialize the response from the chat API
         /// </summary>
@@ -92,11 +122,11 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <returns>The list of module name</returns>
         /// <exception cref="Exception">When not able to get the response</exception>
-        public List<String> getAllModules()
+        public async Task<List<String>> getAllModules()
         {
             try
             {
-                JObject modules = GetResponse(null, "api/tags").Result;
+                JObject modules = await GetResponse(null, "api/tags");
                 List<String> moduleNames = new List<String>();
 
                 foreach (var module in modules["models"])
@@ -120,9 +150,9 @@ namespace VpetChatWithOllama
         private Dictionary<String, String> SystemPrompt()
         {
             StringBuilder systemPrompt = new StringBuilder("");
-            if (AddTimeToPrompt)
+            if (prompt != "")
             {
-                systemPrompt.AppendLine("current time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                systemPrompt.AppendLine(prompt);
             }
             if(costomizedPropts != null)
                 foreach (var costomizedPropt in costomizedPropts)
@@ -139,16 +169,20 @@ namespace VpetChatWithOllama
         /// <returns></returns>
         public async Task<String> Chat(String nextSentence)
         {
-
+            if (AddTimeToPrompt)
+            {
+                nextSentence = "当前时间: ".Translate() + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + nextSentence;
+            }
             chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
 
-            chatingHistory.Add(SystemPrompt());
+            List<Dictionary<String, String>> tempChat = new List<Dictionary<String, String>>(chatingHistory);
+            tempChat.Add(SystemPrompt());
 
             using StringContent jsonContent = new(
                 System.Text.Json.JsonSerializer.Serialize(new
                 {
                     model = moduleName,
-                    messages = chatingHistory,
+                    messages = tempChat,
                     stream = false
                 }),
                 Encoding.UTF8,
