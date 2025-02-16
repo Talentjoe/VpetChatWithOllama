@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Windows.Controls;
 using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
@@ -50,12 +52,12 @@ namespace VpetChatWithOllama
             this.AddTimeToPrompt = AddTime;
             this.costomizedPropts = costomizedPropts;
 
-            if (prompt != "")
-            {
-                chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
-            }
+            // if (prompt != "")
+            // {
+            //   chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
+            // }
 
-            if(chatHistory != "")
+            if (chatHistory != "")
             {
                 chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(chatHistory);
             }
@@ -86,37 +88,16 @@ namespace VpetChatWithOllama
             {
                 BaseAddress = new Uri(terminal),
             };
-            if (prompt != "")
-            {
-                chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
-            }
+            // if (prompt != "")
+            // {
+            // chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
+            //  }
             if (settings.chatHistory != "")
             {
                 chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(settings.chatHistory);
             }
         }
-        /// <summary>
-        /// The structure to deserialize the response from the chat API
-        /// </summary>
-        struct ChatResponse
-        {
-            public Dictionary<String, String> message { get; set; }
-            public int prompt_eval_count { get; set; }
-            public int eval_count { get; set; }
-        }
 
-        /// <summary>
-        /// The structure to deserialize the response from the module exist API
-        /// </summary>
-        struct ModuleExistResponse
-        {
-            public struct Module
-            {
-                public String name { get; set; }
-                public Dictionary<String, String> details { get; set; }
-            }
-            public List<Module> models { get; set; }
-        }
         /// <summary>
         /// Get modules from the ollama terminal
         /// </summary>
@@ -141,27 +122,7 @@ namespace VpetChatWithOllama
                 throw new Exception("Failed to get modules, Check if ollama is running.");
             }
         }
-        /// <summary>
-        /// adding system prompt to the chat history
-        /// </summary>
-        /// <returns>
-        ///     a dictionary with role and content
-        /// </returns>
-        private Dictionary<String, String> SystemPrompt()
-        {
-            StringBuilder systemPrompt = new StringBuilder("");
-            if (prompt != "")
-            {
-                systemPrompt.AppendLine(prompt);
-            }
-            if(costomizedPropts != null)
-                foreach (var costomizedPropt in costomizedPropts)
-                {
-                    systemPrompt.AppendLine(costomizedPropt());
-                }
 
-            return new Dictionary<String, String>() { { "role", "system" }, { "content", systemPrompt.ToString() } };
-        }
         /// <summary>
         /// give the next sentence to the chat API, with history included
         /// </summary>
@@ -169,29 +130,99 @@ namespace VpetChatWithOllama
         /// <returns></returns>
         public async Task<String> Chat(String nextSentence)
         {
-            if (AddTimeToPrompt)
-            {
-                nextSentence = "当前时间: ".Translate() + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" + nextSentence;
-            }
-            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
+            StringContent stringContent = new(GenerateContent(nextSentence, false), Encoding.UTF8, "application/json");
 
-            List<Dictionary<String, String>> tempChat = new List<Dictionary<String, String>>(chatingHistory);
-            tempChat.Add(SystemPrompt());
-
-            using StringContent jsonContent = new(
-                System.Text.Json.JsonSerializer.Serialize(new
-                {
-                    model = moduleName,
-                    messages = tempChat,
-                    stream = false
-                }),
-                Encoding.UTF8,
-                "application/json");
-
-            JObject chatResponseJson = await GetResponse(jsonContent, "api/chat");
+            JObject chatResponseJson = await GetResponse(stringContent, "api/chat");
 
             ChatResponse chatResponse = chatResponseJson.ToObject<ChatResponse>();
 
+            return DealWithChatResponse(chatResponse);
+        }
+
+
+        /// <summary>
+        /// give the next sentence to the chat API, with history included, and stream the response
+        /// </summary>
+        /// <param name="nextSentence"> Next sentence user inputs</param>
+        /// <returns></returns>
+        public async Task<String> ChatWithStream(String nextSentence, Action<string> updateTrigger)
+        {
+
+            StringContent postRequests = new(
+                    GenerateContent(nextSentence, true),
+                    Encoding.UTF8,
+                    "application/json");
+
+            Console.WriteLine(postRequests.ReadAsStringAsync().Result);
+
+            ChatResponse chatResponse = await StreamResponse(postRequests, "api/chat", updateTrigger);
+
+            return DealWithChatResponse(chatResponse);
+        }
+
+        /// <summary>
+        /// add the next sentence to the chat history and add other prompt to the chat history,
+        /// return the string content ready to be sent to server
+        /// </summary>
+        /// <param name="nextSentence">the next sentce ready to chat</param>
+        /// <returns>the content ready to sent to the server</returns>
+        private String GenerateContent(string nextSentence, bool ifStream)
+        {
+            /*if (AddTimeToPrompt)
+            {
+                nextSentence = "对话时间 "+ DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":" + nextSentence;
+            }*/
+
+            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
+
+            List<Dictionary<String, String>> tempChat = new (SystemPrompt());
+            //Console.WriteLine(JsonConvert.SerializeObject(systemPrompt));
+            tempChat.AddRange(chatingHistory);
+
+            return System.Text.Json.JsonSerializer.Serialize(new
+            {
+                model = moduleName,
+                messages = tempChat,
+                stream = ifStream
+            });
+        }
+
+
+        /// <summary>
+        /// adding system prompt to the chat history
+        /// </summary>
+        /// <returns>
+        ///     a dictionary with role and content
+        /// </returns>
+        private List<Dictionary<String, String>> SystemPrompt()
+        {
+
+            List<Dictionary<String, String>> systemPrompt = new();
+            if (prompt != "")
+            {
+                systemPrompt.Add(new() { { "role", "system" }, { "content", prompt } });
+            }
+            if (AddTimeToPrompt)
+            {
+                systemPrompt.Add(new() { { "role", "system" }, { "content", "Current Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") } });
+                //systemPrompt.AppendLine("user input strategy: yyyy-MM-dd HH:mm:ss: <user input>");
+            }
+            if (costomizedPropts != null)
+                foreach (var costomizedPropt in costomizedPropts)
+                {
+                    systemPrompt.Add(new() { { "role", "system" }, { "content", costomizedPropt() } });
+                }
+
+            return systemPrompt;
+        }
+
+        /// <summary>
+        /// input chatResponse and return the content while adding prompt and tocken count
+        /// </summary>
+        /// <param name="chatResponse">the response returned from the chat</param>
+        /// <returns>the content ai generate</returns>
+        private String DealWithChatResponse(ChatResponse chatResponse)
+        {
             promptCount += chatResponse.prompt_eval_count;
             tockenCount += chatResponse.eval_count;
 
@@ -201,6 +232,113 @@ namespace VpetChatWithOllama
         }
 
 
+        private async Task<ChatResponse> StreamResponse(StringContent sendingMessage, String url, Action<string> updateTrigger)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = sendingMessage
+            };
+
+            HttpResponseMessage response = null;
+            Stream responseStream = null;
+            StreamReader reader = null;
+            try
+            {
+                response = await sharedClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                responseStream = await response.Content.ReadAsStreamAsync();
+                reader = new StreamReader(responseStream);
+
+                StringBuilder chatResponse = new();
+                int prompt_eval_count = 0;
+                int eval_count = 0;
+
+                //Console.WriteLine("Ollama 正在响应:");
+                while (!reader.EndOfStream)
+                {
+                    string line = await reader.ReadLineAsync();
+                    //Console.WriteLine(line);
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
+                    using (JsonDocument doc = JsonDocument.Parse(line))
+                    {
+                        string content = doc?.RootElement.GetProperty("message").GetProperty("content").GetString();
+                        updateTrigger.Invoke(content);
+                        //Console.Write(content); // 逐步显示文本
+                        chatResponse.Append(content?.Replace("\n", "\r\n"));
+
+                        if (doc.RootElement.GetProperty("done").GetBoolean() == true)
+                        {
+                            prompt_eval_count = doc.RootElement.GetProperty("prompt_eval_count").GetInt32();
+                            eval_count = doc.RootElement.GetProperty("eval_count").GetInt32();
+
+                            return new ChatResponse()
+                            {
+                                message = new Dictionary<string, string>() {
+                                    {"role", doc?.RootElement.GetProperty("message").GetProperty("role").GetString() },
+                                    { "content", chatResponse.ToString() }
+                                },
+                                prompt_eval_count = prompt_eval_count,
+                                eval_count = eval_count
+                            };
+
+                        }
+
+
+                    }
+                }
+
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine("请求超时或被取消");
+            }
+            return default;
+
+        }
+
+        public String saveHistory()
+        {
+            return JsonConvert.SerializeObject(chatingHistory);
+        }
+
+        public void changeModule(String moduleName)
+        {
+            this.moduleName = moduleName;
+        }
+
+        /// <summary>
+        /// The structure to deserialize the response from the chat API
+        /// </summary>
+        struct ChatResponse
+        {
+            public Dictionary<String, String> message { get; set; }
+            public int prompt_eval_count { get; set; }
+            public int eval_count { get; set; }
+        }
+
+        /// <summary>
+        /// The structure to deserialize the response from the module exist API
+        /// </summary>
+        struct ModuleExistResponse
+        {
+            public struct Module
+            {
+                public String name { get; set; }
+                public Dictionary<String, String> details { get; set; }
+            }
+            public List<Module> models { get; set; }
+        }
+
+
+        /// <summary>
+        ///     get post or get response from the ollama terminal
+        /// </summary>
+        /// <param name="sendingMessage"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private async Task<JObject> GetResponse(StringContent sendingMessage, String url)
         {
             HttpResponseMessage response;
@@ -227,19 +365,10 @@ namespace VpetChatWithOllama
             }
 
             JObject jobject = JObject.Parse(jsonResponse);
-            //T formatedResponse = JsonConvert.DeserializeObject<T>(jsonResponse);
 
             return jobject;
         }
 
-        public String saveHistory()
-        {
-            return JsonConvert.SerializeObject(chatingHistory);
-        }
-
-        public void changeModule(String moduleName)
-        {
-            this.moduleName = moduleName;
-        }
     }
+
 }
