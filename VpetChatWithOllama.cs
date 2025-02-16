@@ -8,31 +8,37 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
+using System.Xml.Linq;
 using VPet.Plugin.ChatGPTPlugin;
+using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
+using static VPet_Simulator.Core.GraphInfo;
 
 namespace VpetChatWithOllama
 {
 
     public class ChatWithOllama : MainPlugin
     {
+        public MessageBar MsgBar => (MessageBar)MW.Main.MsgBar;
         public OllamaChatCore COllama;
         public ChatOllamaAPI COllamaAPI;
         private PluginInformations.PluginSettings _settings;
-        public PluginInformations.PluginSettings settings {
-            set {  _settings = value; COllama = new OllamaChatCore(value);}
+        public PluginInformations.PluginSettings settings
+        {
+            set { _settings = value; COllama = new OllamaChatCore(value); }
             get { return _settings; }
         }
 
         public ChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
         public override void LoadPlugin()
         {
-
             if (File.Exists(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"))
-                settings =  PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
+                settings = PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
 
             else
                 settings = new PluginInformations.PluginSettings();
+
 
             MW.TalkAPI.Add(new ChatOllamaAPI(this));
             var menuItem = new MenuItem()
@@ -47,7 +53,7 @@ namespace VpetChatWithOllama
         public override void Save()
         {
             _settings.chatHistory = COllama.saveHistory();
-             File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
+            File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
         }
         public override void Setting()
         {
@@ -56,39 +62,63 @@ namespace VpetChatWithOllama
         public override string PluginName => "ChatWithOllama";
     }
 
-    public class ChatOllamaAPI: TalkBox
+    public class ChatOllamaAPI : TalkBox
     {
+        public OllamaMessageBar ollamaMessageBar;
+        protected ChatWithOllama mainPlugin;
         public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
-            Plugin = mainPlugin;
+            ollamaMessageBar = new(mainPlugin);
+            this.mainPlugin = mainPlugin;
         }
-        protected ChatWithOllama Plugin;
         public override string APIName => "ChatOllama";
         public override async void Responded(string text)
         {
-            DisplayThink();
-            if(Plugin.COllama == null)
+            Dispatcher.Invoke(() => this.IsEnabled = false);
+            if (!(mainPlugin.settings.enableStream))
+                DisplayThink();
+            if (mainPlugin.COllama == null)
             {
                 DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
                 return;
             }
             try
             {
-                String res =  await Plugin.COllama.Chat(text);
-                DisplayThinkToSayRnd(res);
+                if (!mainPlugin.settings.enableStream)
+                {
+                    Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+                    String res = await mainPlugin.COllama.Chat(text);
+                    DisplayThinkToSayRnd(res);
+                }
+                else
+                {
+                    Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
+                    Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
+
+                    Action<string> action = message =>
+                    {
+                        ollamaMessageBar.UpdateText(message);
+                    };
+                    String res = await mainPlugin.COllama.ChatWithStream(text, action);
+
+                    Dispatcher.Invoke(() => ollamaMessageBar.FinishText());
+                }
             }
+
             catch (Exception ex)
             {
                 DisplayThinkToSayRnd("ChatOllama API 出现错误: " + ex.Message);
             }
+            Dispatcher.Invoke(() => this.IsEnabled = true);
 
         }
-        public override void Setting() => Plugin.Setting();
-        
+        public override void Setting() => mainPlugin.Setting();
+
+
 
     }
 
-    public class  PluginInformations
+    public class PluginInformations
     {
         public class PluginSettings
         {
@@ -98,6 +128,7 @@ namespace VpetChatWithOllama
             public bool addTimeAsPrompt;
             public string chatHistory;
             public bool supportTool;
+            public bool enableStream;
 
             public PluginSettings()
             {
@@ -116,4 +147,5 @@ namespace VpetChatWithOllama
             return jobj.ToObject<PluginSettings>();
         }
     }
+
 }
