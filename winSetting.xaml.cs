@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Windows;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using LinePutScript.Localization.WPF;
 
 namespace VpetChatWithOllama
@@ -10,6 +9,10 @@ namespace VpetChatWithOllama
     {
         ChatWithOllama plugin;
 
+        /// <summary>
+        /// Initialize the setting window
+        /// </summary>
+        /// <param name="plugin">the main plugin</param>
         public winSetting(ChatWithOllama plugin)
         {
             this.plugin = plugin;
@@ -21,16 +24,24 @@ namespace VpetChatWithOllama
             cbModel.Text = plugin.settings.moduleName;
             ckAddTime.IsChecked = plugin.settings.addTimeAsPrompt;
             tbChatHistory.Text = plugin.COllama.saveHistory();
-            //cbModel.SelectedIndex = 0;
 
             this.Loaded += WinSetting_Loaded;
         }
 
+        /// <summary>
+        /// use an async method to load the modules list to avoid blocking the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void WinSetting_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadModulesAsync();
         }
 
+        /// <summary>
+        /// Load local modules list to the combobox to let user choose
+        /// </summary>
+        /// <returns></returns>
         private async Task LoadModulesAsync()
         {
             try
@@ -44,8 +55,11 @@ namespace VpetChatWithOllama
             }
         }
 
-
-        // Save button logic
+        /// <summary>
+        /// Dealing with the save button, save the settings to the plugin
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             WinSetting_Loaded(sender, e);
@@ -54,7 +68,6 @@ namespace VpetChatWithOllama
                 MessageBox.Show("出问题了 请联系开发者!".Translate());
                 return;
             }
-            // Extract and save settings
             plugin.settings = new PluginInformations.PluginSettings
             {
                 addTimeAsPrompt = ckAddTime.IsChecked ?? false,
@@ -70,6 +83,11 @@ namespace VpetChatWithOllama
             this.Close();
         }
 
+        /// <summary>
+        /// Clear the chat history, ask if the user really want to delete the history
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult res = MessageBox.Show("你确定要删除历史对话吗？".Translate(), "删除历史对话".Translate(), MessageBoxButton.YesNo, MessageBoxImage.Question);

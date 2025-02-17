@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Windows.Controls;
-using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static VpetChatWithOllama.PluginInformations;
 
 
 namespace VpetChatWithOllama
@@ -52,11 +48,6 @@ namespace VpetChatWithOllama
             this.AddTimeToPrompt = AddTime;
             this.costomizedPropts = costomizedPropts;
 
-            // if (prompt != "")
-            // {
-            //   chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
-            // }
-
             if (chatHistory != "")
             {
                 chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(chatHistory);
@@ -88,10 +79,7 @@ namespace VpetChatWithOllama
             {
                 BaseAddress = new Uri(terminal),
             };
-            // if (prompt != "")
-            // {
-            // chatingHistory.Add(new Dictionary<String, String>() { { "role", "system" }, { "content", prompt } });
-            //  }
+
             if (settings.chatHistory != "")
             {
                 chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(settings.chatHistory);
@@ -168,15 +156,9 @@ namespace VpetChatWithOllama
         /// <returns>the content ready to sent to the server</returns>
         private String GenerateContent(string nextSentence, bool ifStream)
         {
-            /*if (AddTimeToPrompt)
-            {
-                nextSentence = "对话时间 "+ DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":" + nextSentence;
-            }*/
-
             chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
 
             List<Dictionary<String, String>> tempChat = new (SystemPrompt());
-            //Console.WriteLine(JsonConvert.SerializeObject(systemPrompt));
             tempChat.AddRange(chatingHistory);
 
             return System.Text.Json.JsonSerializer.Serialize(new
@@ -205,7 +187,6 @@ namespace VpetChatWithOllama
             if (AddTimeToPrompt)
             {
                 systemPrompt.Add(new() { { "role", "system" }, { "content", "Current Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") } });
-                //systemPrompt.AppendLine("user input strategy: yyyy-MM-dd HH:mm:ss: <user input>");
             }
             if (costomizedPropts != null)
                 foreach (var costomizedPropt in costomizedPropts)
@@ -231,7 +212,13 @@ namespace VpetChatWithOllama
             return chatResponse.message["content"];
         }
 
-
+        /// <summary>
+        /// the implimation of the stream response
+        /// </summary>
+        /// <param name="sendingMessage">the input from user</param>
+        /// <param name="url">the url to post the message</param>
+        /// <param name="updateTrigger">the trigger of updating chat content</param>
+        /// <returns>Chat Response which include the response form the llm and the prompt usage</returns>
         private async Task<ChatResponse> StreamResponse(StringContent sendingMessage, String url, Action<string> updateTrigger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -252,11 +239,9 @@ namespace VpetChatWithOllama
                 int prompt_eval_count = 0;
                 int eval_count = 0;
 
-                //Console.WriteLine("Ollama 正在响应:");
                 while (!reader.EndOfStream)
                 {
                     string line = await reader.ReadLineAsync();
-                    //Console.WriteLine(line);
                     if (string.IsNullOrWhiteSpace(line))
                     {
                         continue;
@@ -265,7 +250,6 @@ namespace VpetChatWithOllama
                     {
                         string content = doc?.RootElement.GetProperty("message").GetProperty("content").GetString();
                         updateTrigger.Invoke(content);
-                        //Console.Write(content); // 逐步显示文本
                         chatResponse.Append(content?.Replace("\n", "\r\n"));
 
                         if (doc.RootElement.GetProperty("done").GetBoolean() == true)

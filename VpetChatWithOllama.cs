@@ -1,19 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
-using System.Xml.Linq;
-using VPet.Plugin.ChatGPTPlugin;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
-using static VPet_Simulator.Core.GraphInfo;
 
 namespace VpetChatWithOllama
 {
@@ -30,7 +21,15 @@ namespace VpetChatWithOllama
             get { return _settings; }
         }
 
+        /// <summary>
+        /// initialize the plugin
+        /// </summary>
+        /// <param name="mainwin"></param>
         public ChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
+        
+        /// <summary>
+        /// the load logic, to load user settings and initialize the plugin
+        /// </summary>
         public override void LoadPlugin()
         {
             if (File.Exists(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"))
@@ -50,15 +49,29 @@ namespace VpetChatWithOllama
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
         }
 
+        /// <summary>
+        /// save logic, used when exit, persiste the settings
+        /// </summary>
         public override void Save()
         {
-            _settings.chatHistory = COllama.saveHistory();
-            File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
+            if (settings != null)
+            {
+                _settings.chatHistory = COllama.saveHistory();
+                File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
+            }        
         }
+
+        /// <summary>
+        /// the user interface for setting the plugin
+        /// </summary>
         public override void Setting()
         {
             new winSetting(this).ShowDialog();
         }
+
+        /// <summary>
+        /// The name of the plugin
+        /// </summary>
         public override string PluginName => "ChatWithOllama";
     }
 
@@ -66,12 +79,13 @@ namespace VpetChatWithOllama
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
+        public override string APIName => "ChatOllama";
+
         public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
             ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
         }
-        public override string APIName => "ChatOllama";
         public override async void Responded(string text)
         {
             Dispatcher.Invoke(() => this.IsEnabled = false);
