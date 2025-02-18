@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LinePutScript.Localization.WPF;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Windows;
@@ -33,9 +34,14 @@ namespace VpetChatWithOllama
         public override void LoadPlugin()
         {
             if (File.Exists(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"))
-                settings = PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
+            {
+                PluginInformations.PluginSettings tempSetting = PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
 
-            else
+                if (tempSetting != null)
+                    settings = tempSetting;
+            }
+                
+            if(settings == null)
                 settings = new PluginInformations.PluginSettings();
 
 
@@ -157,8 +163,14 @@ namespace VpetChatWithOllama
 
         public static PluginSettings getFromJson(string json)
         {
-            var jobj = JObject.Parse(json);
-            return jobj.ToObject<PluginSettings>();
+            try{
+                var jobj = JObject.Parse(json);
+                return jobj.ToObject<PluginSettings>();
+            }
+            catch(Exception e){
+                MessageBox.Show("读取文档失败".Translate() + e.Message);
+            }
+            return null;
         }
     }
 
