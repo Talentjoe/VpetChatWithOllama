@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using VPet_Simulator.Core;
@@ -108,6 +109,10 @@ namespace VpetChatWithOllama
                 {
                     Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
                     String res = await mainPlugin.COllama.Chat(text);
+                    if(!mainPlugin.settings.showR1Think)
+                    {
+                        res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
+                    }
                     DisplayThinkToSayRnd(res);
                 }
                 else
@@ -115,9 +120,21 @@ namespace VpetChatWithOllama
                     Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
                     Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
 
+                    bool showText = true;
                     Action<string> action = message =>
                     {
-                        ollamaMessageBar.UpdateText(message);
+                        if(message.Contains("<think>")&&!mainPlugin.settings.showR1Think)
+                        {
+                            showText = false;
+                        }
+                        if (showText)
+                            ollamaMessageBar.UpdateText(message);
+                        else
+                            ollamaMessageBar.UpdateText("");
+                        if(message.Contains("</think>") && !mainPlugin.settings.showR1Think)
+                        {
+                            showText = true;
+                        }
                     };
                     String res = await mainPlugin.COllama.ChatWithStream(text, action);
 
@@ -149,6 +166,7 @@ namespace VpetChatWithOllama
             public string chatHistory;
             public bool supportTool;
             public bool enableStream;
+            public bool showR1Think;
 
             public PluginSettings()
             {
@@ -158,6 +176,8 @@ namespace VpetChatWithOllama
                 this.addTimeAsPrompt = true;
                 this.chatHistory = "[]";
                 this.supportTool = false;
+                this.enableStream = false;
+                this.showR1Think = true;
             }
         }
 

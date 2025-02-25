@@ -24,6 +24,7 @@ namespace VpetChatWithOllama
             cbModel.Text = plugin.settings.moduleName;
             ckAddTime.IsChecked = plugin.settings.addTimeAsPrompt;
             tbChatHistory.Text = plugin.COllama.saveHistory();
+            ckShowR1Think.IsChecked = plugin.settings.showR1Think;
 
             this.Loaded += WinSetting_Loaded;
         }
@@ -75,7 +76,8 @@ namespace VpetChatWithOllama
                 moduleName = cbModel.Text?.ToString(),
                 prompt = tbPromptTemplate.Text,
                 chatHistory = tbChatHistory.Text,
-                enableStream = ckEnableStream.IsChecked ?? false
+                enableStream = ckEnableStream.IsChecked ?? false,
+                showR1Think = ckShowR1Think.IsChecked ?? false
             };
 
 

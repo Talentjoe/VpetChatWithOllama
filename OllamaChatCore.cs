@@ -141,7 +141,7 @@ namespace VpetChatWithOllama
                     Encoding.UTF8,
                     "application/json");
 
-            Console.WriteLine(postRequests.ReadAsStringAsync().Result);
+            //Console.WriteLine(postRequests.ReadAsStringAsync().Result);
 
             ChatResponse chatResponse = await StreamResponse(postRequests, "api/chat", updateTrigger);
 
