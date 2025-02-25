@@ -1,19 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using LinePutScript.Localization.WPF;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
-using System.Xml.Linq;
-using VPet.Plugin.ChatGPTPlugin;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
-using static VPet_Simulator.Core.GraphInfo;
 
 namespace VpetChatWithOllama
 {
@@ -30,13 +23,26 @@ namespace VpetChatWithOllama
             get { return _settings; }
         }
 
+        /// <summary>
+        /// initialize the plugin
+        /// </summary>
+        /// <param name="mainwin"></param>
         public ChatWithOllama(IMainWindow mainwin) : base(mainwin) { }
+        
+        /// <summary>
+        /// the load logic, to load user settings and initialize the plugin
+        /// </summary>
         public override void LoadPlugin()
         {
             if (File.Exists(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"))
-                settings = PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
+            {
+                PluginInformations.PluginSettings tempSetting = PluginInformations.getFromJson(File.ReadAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json"));
 
-            else
+                if (tempSetting != null)
+                    settings = tempSetting;
+            }
+                
+            if(settings == null)
                 settings = new PluginInformations.PluginSettings();
 
 
@@ -50,15 +56,29 @@ namespace VpetChatWithOllama
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
         }
 
+        /// <summary>
+        /// save logic, used when exit, persiste the settings
+        /// </summary>
         public override void Save()
         {
-            _settings.chatHistory = COllama.saveHistory();
-            File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
+            if (settings != null)
+            {
+                _settings.chatHistory = COllama.saveHistory();
+                File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json", JsonConvert.SerializeObject(settings));
+            }        
         }
+
+        /// <summary>
+        /// the user interface for setting the plugin
+        /// </summary>
         public override void Setting()
         {
             new winSetting(this).ShowDialog();
         }
+
+        /// <summary>
+        /// The name of the plugin
+        /// </summary>
         public override string PluginName => "ChatWithOllama";
     }
 
@@ -66,12 +86,13 @@ namespace VpetChatWithOllama
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
+        public override string APIName => "ChatOllama";
+
         public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
             ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
         }
-        public override string APIName => "ChatOllama";
         public override async void Responded(string text)
         {
             Dispatcher.Invoke(() => this.IsEnabled = false);
@@ -88,6 +109,10 @@ namespace VpetChatWithOllama
                 {
                     Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
                     String res = await mainPlugin.COllama.Chat(text);
+                    if(!mainPlugin.settings.showR1Think)
+                    {
+                        res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
+                    }
                     DisplayThinkToSayRnd(res);
                 }
                 else
@@ -95,9 +120,21 @@ namespace VpetChatWithOllama
                     Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
                     Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
 
+                    bool showText = true;
                     Action<string> action = message =>
                     {
-                        ollamaMessageBar.UpdateText(message);
+                        if(message.Contains("<think>")&&!mainPlugin.settings.showR1Think)
+                        {
+                            showText = false;
+                        }
+                        if (showText)
+                            ollamaMessageBar.UpdateText(message);
+                        else
+                            ollamaMessageBar.UpdateText("");
+                        if(message.Contains("</think>") && !mainPlugin.settings.showR1Think)
+                        {
+                            showText = true;
+                        }
                     };
                     String res = await mainPlugin.COllama.ChatWithStream(text, action);
 
@@ -129,6 +166,7 @@ namespace VpetChatWithOllama
             public string chatHistory;
             public bool supportTool;
             public bool enableStream;
+            public bool showR1Think;
 
             public PluginSettings()
             {
@@ -138,13 +176,21 @@ namespace VpetChatWithOllama
                 this.addTimeAsPrompt = true;
                 this.chatHistory = "[]";
                 this.supportTool = false;
+                this.enableStream = false;
+                this.showR1Think = true;
             }
         }
 
         public static PluginSettings getFromJson(string json)
         {
-            var jobj = JObject.Parse(json);
-            return jobj.ToObject<PluginSettings>();
+            try{
+                var jobj = JObject.Parse(json);
+                return jobj.ToObject<PluginSettings>();
+            }
+            catch(Exception e){
+                MessageBox.Show("读取文档失败".Translate() + e.Message);
+            }
+            return null;
         }
     }
 

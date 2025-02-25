@@ -26,6 +26,7 @@
             <RowDefinition Height="60" />
             <RowDefinition Height="60" />
             <RowDefinition Height="60" />
+            <RowDefinition Height="60" />
             <RowDefinition Height="210"  />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
@@ -35,7 +36,8 @@
         <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Language="zh-cn" Text="提示词"/><LineBreak/><Run Text="Prompt Template"/></TextBlock>
         <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Language="zh-cn" Text="将时间作为提示词"/><LineBreak/><Run Text="Add Time As Prompt"/></TextBlock>
         <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Language="zh-cn" Text="使用流式传输"  /><LineBreak/><Run Language="en-us" Text="use stream"/></TextBlock>
-        <TextBlock Grid.Row="5" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="对话历史 "/><LineBreak/><Run Text="Chat History"/></TextBlock>
+        <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Language="zh-cn" Text="显示R1思考"  /><LineBreak/><Run Language="en-us" Text="Show Thinking Process"/></TextBlock>
+        <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="对话历史 "/><LineBreak/><Run Text="Chat History"/></TextBlock>
 
         <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="http://localhost:11434/" 
@@ -50,8 +52,9 @@
 
         <CheckBox x:Name="ckAddTime" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" />
+        <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" />
 
-        <TextBox x:Name="tbChatHistory" Grid.Row="5" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
+        <TextBox x:Name="tbChatHistory" Grid.Row="6" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="[]" TextWrapping="WrapWithOverflow"
                  ToolTip="Previous chat logs (read-only)." Height="200" VerticalScrollBarVisibility="Visible" 
                  AcceptsReturn="True"   IsReadOnly="True" HorizontalAlignment="Center" Width="230"  />
