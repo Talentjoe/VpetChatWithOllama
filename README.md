@@ -7,7 +7,9 @@ This repo is not a game, you need to download Vpet on steam and subscribe this p
 这不是一个游戏，需要在steam上下载vpet，订阅该模组，或将release的内容放置到mod文件夹下才可以使用
 
 Link to vpet: https://store.steampowered.com/app/1920960/_/
+
 Link to plugin on steam: https://steamcommunity.com/sharedfiles/filedetails/?id=3425231280
 
 游戏本体链节：https://store.steampowered.com/app/1920960/_/
+
 steam创意工坊链节：https://steamcommunity.com/sharedfiles/filedetails/?id=3425231280
