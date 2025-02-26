@@ -32,7 +32,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock VerticalAlignment="Center" ><Run Language="zh-cn" Text="接口地址"/><LineBreak/><Run Text="API URL"/></TextBlock>
-        <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Language="zh-cn" Text="模型名车"/><LineBreak/><Run Text="Model Name"/></TextBlock>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Language="zh-cn" Text="模型名称"/><LineBreak/><Run Text="Model Name"/></TextBlock>
         <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Language="zh-cn" Text="提示词"/><LineBreak/><Run Text="Prompt Template"/></TextBlock>
         <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Language="zh-cn" Text="将时间作为提示词"/><LineBreak/><Run Text="Add Time As Prompt"/></TextBlock>
         <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Language="zh-cn" Text="使用流式传输"  /><LineBreak/><Run Language="en-us" Text="use stream"/></TextBlock>
