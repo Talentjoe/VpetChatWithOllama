@@ -15,7 +15,7 @@ namespace VpetChatWithOllama
     {
         public MessageBar MsgBar => (MessageBar)MW.Main.MsgBar;
         public OllamaChatCore COllama;
-        public ChatOllamaAPI COllamaAPI;
+        public ChatWithOllamaAPI COllamaAPI;
         private PluginInformations.PluginSettings _settings;
         public PluginInformations.PluginSettings settings
         {
@@ -46,7 +46,7 @@ namespace VpetChatWithOllama
                 settings = new PluginInformations.PluginSettings();
 
 
-            MW.TalkAPI.Add(new ChatOllamaAPI(this));
+            MW.TalkAPI.Add(new ChatWithOllamaAPI(this));
             var menuItem = new MenuItem()
             {
                 Header = "ChatOllamaAPI",
@@ -82,13 +82,13 @@ namespace VpetChatWithOllama
         public override string PluginName => "ChatWithOllama";
     }
 
-    public class ChatOllamaAPI : TalkBox
+    public class ChatWithOllamaAPI : TalkBox
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
-        public override string APIName => "ChatOllama";
+        public override string APIName => "ChatWithOllama";
 
-        public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
+        public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
             ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
@@ -100,7 +100,7 @@ namespace VpetChatWithOllama
                 DisplayThink();
             if (mainPlugin.COllama == null)
             {
-                DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
+                DisplayThinkToSayRnd("请先前往设置中设置 ChatWithOllama API".Translate());
                 return;
             }
             try
