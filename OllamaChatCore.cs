@@ -2,8 +2,11 @@
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VPet_Simulator.Windows.Interface;
 
 
 namespace VpetChatWithOllama
@@ -20,6 +23,7 @@ namespace VpetChatWithOllama
         private List<Func<String>> costomizedPropts;
         public long tockenCount { get; private set; }
         public long promptCount { get; private set; }
+        private Dictionary<String, Func<String>> replacementMapping;
 
         /// <summary>
         /// Initialize the chat with ollama terminal
@@ -63,8 +67,9 @@ namespace VpetChatWithOllama
 
         }
 
-        public OllamaChatCore(PluginInformations.PluginSettings settings)
+        public OllamaChatCore(PluginInformations.PluginSettings settings,Dictionary<String,Func<String>> rp = default)
         {
+            this.replacementMapping = rp;
             this.moduleName = settings.moduleName;
             this.terminal = settings.url;
             this.supportTool = false;
@@ -182,7 +187,16 @@ namespace VpetChatWithOllama
             List<Dictionary<String, String>> systemPrompt = new();
             if (prompt != "")
             {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", prompt } });
+                String tempPrompt = prompt;
+                if (replacementMapping != null)
+                {
+                    foreach (var replacement in replacementMapping)
+                    {
+                        Regex.Replace(tempPrompt, replacement.Key, replacement.Value());
+                    }
+                }
+
+                systemPrompt.Add(new() { { "role", "system" }, { "content", tempPrompt } });
             }
             if (AddTimeToPrompt)
             {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -15,11 +16,11 @@ namespace VpetChatWithOllama
     {
         public MessageBar MsgBar => (MessageBar)MW.Main.MsgBar;
         public OllamaChatCore COllama;
-        public ChatOllamaAPI COllamaAPI;
+        public ChatWithOllamaAPI COllamaAPI;
         private PluginInformations.PluginSettings _settings;
         public PluginInformations.PluginSettings settings
         {
-            set { _settings = value; COllama = new OllamaChatCore(value); }
+            set { _settings = value; COllama = new OllamaChatCore(value,GetMapping()); }
             get { return _settings; }
         }
 
@@ -45,8 +46,8 @@ namespace VpetChatWithOllama
             if(settings == null)
                 settings = new PluginInformations.PluginSettings();
 
-
-            MW.TalkAPI.Add(new ChatOllamaAPI(this));
+            
+            MW.TalkAPI.Add(new ChatWithOllamaAPI(this));
             var menuItem = new MenuItem()
             {
                 Header = "ChatOllamaAPI",
@@ -54,6 +55,15 @@ namespace VpetChatWithOllama
             };
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
+        }
+
+        public Dictionary<String,Func<string>> GetMapping()
+        {
+
+            return  new() { 
+                { "{name}",()=>MW.Main.Core.Save.Name},
+                { "{curTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+            };
         }
 
         /// <summary>
@@ -82,13 +92,13 @@ namespace VpetChatWithOllama
         public override string PluginName => "ChatWithOllama";
     }
 
-    public class ChatOllamaAPI : TalkBox
+    public class ChatWithOllamaAPI : TalkBox
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
-        public override string APIName => "ChatOllama";
+        public override string APIName => "ChatWithOllama";
 
-        public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
+        public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
             ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
@@ -100,7 +110,7 @@ namespace VpetChatWithOllama
                 DisplayThink();
             if (mainPlugin.COllama == null)
             {
-                DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
+                DisplayThinkToSayRnd("请先前往设置中设置 ChatWithOllama API".Translate());
                 return;
             }
             try
