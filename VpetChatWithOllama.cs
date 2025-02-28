@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -19,7 +20,7 @@ namespace VpetChatWithOllama
         private PluginInformations.PluginSettings _settings;
         public PluginInformations.PluginSettings settings
         {
-            set { _settings = value; COllama = new OllamaChatCore(value); }
+            set { _settings = value; COllama = new OllamaChatCore(value,GetMapping()); }
             get { return _settings; }
         }
 
@@ -45,7 +46,7 @@ namespace VpetChatWithOllama
             if(settings == null)
                 settings = new PluginInformations.PluginSettings();
 
-
+            
             MW.TalkAPI.Add(new ChatWithOllamaAPI(this));
             var menuItem = new MenuItem()
             {
@@ -54,6 +55,15 @@ namespace VpetChatWithOllama
             };
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
+        }
+
+        public Dictionary<String,Func<string>> GetMapping()
+        {
+
+            return  new() { 
+                { "{name}",()=>MW.Main.Core.Save.Name},
+                { "{curTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+            };
         }
 
         /// <summary>
