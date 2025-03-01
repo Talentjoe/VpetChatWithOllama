@@ -124,7 +124,7 @@
     <value>Model Name</value>
   </data>
   <data name="UseStream" xml:space="preserve">
-    <value>use stream</value>
+    <value>Use Stream</value>
   </data>
   <data name="AdvancedPrompt" xml:space="preserve">
     <value>Advanced Prompt</value>
@@ -143,5 +143,8 @@
   </data>
   <data name="SaveSettings" xml:space="preserve">
     <value>Save Settings</value>
+  </data>
+  <data name="TestPrompts" xml:space="preserve">
+    <value>Test Prompt</value>
   </data>
 </root>

@@ -144,4 +144,7 @@
   <data name="SaveSettings" xml:space="preserve">
     <value>保存</value>
   </data>
+  <data name="TestPrompts" xml:space="preserve">
+    <value>测试提示词</value>
+  </data>
 </root>

@@ -133,7 +133,16 @@ namespace VpetChatWithOllama.Properties {
         }
         
         /// <summary>
-        ///   查找类似 use stream 的本地化字符串。
+        ///   查找类似 Test Prompt 的本地化字符串。
+        /// </summary>
+        public static string TestPrompts {
+            get {
+                return ResourceManager.GetString("TestPrompts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Use Stream 的本地化字符串。
         /// </summary>
         public static string UseStream {
             get {

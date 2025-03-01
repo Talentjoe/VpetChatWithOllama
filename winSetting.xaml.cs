@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Collections.ObjectModel;
 using LinePutScript.Localization.WPF;
+using System.Text.RegularExpressions;
 
 namespace VpetChatWithOllama
 {
@@ -95,6 +96,18 @@ namespace VpetChatWithOllama
             MessageBoxResult res = MessageBox.Show("你确定要删除历史对话吗？".Translate(), "删除历史对话".Translate(), MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (res == MessageBoxResult.Yes)
                 tbChatHistory.Text = "[]";
+        }
+
+        private void btnTest_Click(object sender, RoutedEventArgs e)
+        {
+            String temp = tbPromptTemplate.Text;
+
+            foreach (var item in plugin.GetMapping())
+            {
+                temp = Regex.Replace(temp, item.Key, item.Value());
+            }
+
+            MessageBox.Show(temp,"Sample Prompt");
         }
     }
 }
