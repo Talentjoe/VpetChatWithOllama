@@ -164,7 +164,7 @@ namespace VpetChatWithOllama
             chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
 
             List<Dictionary<String, String>> tempChat = new (SystemPrompt());
-            tempChat.AddRange(chatingHistory);
+            tempChat.InsertRange(0, chatingHistory);
 
             return System.Text.Json.JsonSerializer.Serialize(new
             {

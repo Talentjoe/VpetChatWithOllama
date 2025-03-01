@@ -71,7 +71,7 @@ namespace VpetChatWithOllama
             }
             plugin.settings = new PluginInformations.PluginSettings
             {
-                enhancePrompt = ckEnableStream.IsChecked ?? false,
+                enhancePrompt = ckEnhancePrompt.IsChecked ?? false,
                 url = tbAPIURL.Text,
                 moduleName = cbModel.Text?.ToString(),
                 prompt = tbPromptTemplate.Text,
