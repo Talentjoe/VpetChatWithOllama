@@ -35,7 +35,7 @@
         <TextBlock VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.APIURL}"/></TextBlock>
         <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ModelName}"/></TextBlock>
         <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.Prompt}"/></TextBlock>
-        <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AddTimeAsPrompt}"/></TextBlock>
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AdvancedPrompt}"/></TextBlock>
         <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.UseStream}"/></TextBlock>
         <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ShowThinkingProcess}"/></TextBlock>
         <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.ChatHistory}"/></TextBlock>
@@ -51,7 +51,7 @@
                  ToolTip="Template for initializing prompts. " AcceptsReturn="True" TextWrapping="WrapWithOverflow"
                  Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
 
-        <CheckBox x:Name="ckAddTime" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" />
+        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" />
 

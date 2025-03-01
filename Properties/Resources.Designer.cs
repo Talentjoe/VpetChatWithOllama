@@ -61,11 +61,11 @@ namespace VpetChatWithOllama.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Add Time As Prompt 的本地化字符串。
+        ///   查找类似 Advanced Prompt 的本地化字符串。
         /// </summary>
-        public static string AddTimeAsPrompt {
+        public static string AdvancedPrompt {
             get {
-                return ResourceManager.GetString("AddTimeAsPrompt", resourceCulture);
+                return ResourceManager.GetString("AdvancedPrompt", resourceCulture);
             }
         }
         

@@ -126,8 +126,8 @@
   <data name="UseStream" xml:space="preserve">
     <value>使用流式传输</value>
   </data>
-  <data name="AddTimeAsPrompt" xml:space="preserve">
-    <value>将时间作为提示词</value>
+  <data name="AdvancedPrompt" xml:space="preserve">
+    <value>使用高级prompt</value>
   </data>
   <data name="ShowThinkingProcess" xml:space="preserve">
     <value>显示思考过程</value>

@@ -16,7 +16,7 @@ namespace VpetChatWithOllama
         private String moduleName;
         private String terminal;
         private bool supportTool;
-        private bool AddTimeToPrompt;
+        private bool enhancePrompt;
         private HttpClient sharedClient;
         private List<Dictionary<String, String>> chatingHistory;
         private String prompt;
@@ -39,7 +39,7 @@ namespace VpetChatWithOllama
             String moduleName = "Qwen2.5:7b",
             String terminal = "http://localhost:11434/",
             bool supportTool = true,
-            bool AddTime = true,
+            bool enhancePrompt = true,
             List<Func<String>> costomizedPropts = null,
             String chatHistory = ""
         )
@@ -49,7 +49,7 @@ namespace VpetChatWithOllama
             this.supportTool = supportTool;
             this.chatingHistory = new List<Dictionary<String, String>>();
             this.prompt = prompt;
-            this.AddTimeToPrompt = AddTime;
+            this.enhancePrompt = enhancePrompt;
             this.costomizedPropts = costomizedPropts;
 
             if (chatHistory != "")
@@ -75,7 +75,7 @@ namespace VpetChatWithOllama
             this.supportTool = false;
             this.chatingHistory = new List<Dictionary<String, String>>();
             this.prompt = settings.prompt;
-            this.AddTimeToPrompt = settings.addTimeAsPrompt;
+            this.enhancePrompt = settings.enhancePrompt;
             this.tockenCount = 0;
             this.promptCount = 0;
             this.costomizedPropts = new List<Func<String>>();
@@ -185,22 +185,18 @@ namespace VpetChatWithOllama
         {
 
             List<Dictionary<String, String>> systemPrompt = new();
+            string tempPrompt = prompt;
             if (prompt != "")
             {
-                String tempPrompt = prompt;
-                if (replacementMapping != null)
+                if (replacementMapping != null && enhancePrompt)
                 {
                     foreach (var replacement in replacementMapping)
                     {
-                        Regex.Replace(tempPrompt, replacement.Key, replacement.Value());
+                        tempPrompt = Regex.Replace(tempPrompt, replacement.Key, replacement.Value());
                     }
                 }
 
                 systemPrompt.Add(new() { { "role", "system" }, { "content", tempPrompt } });
-            }
-            if (AddTimeToPrompt)
-            {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", "Current Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") } });
             }
             if (costomizedPropts != null)
                 foreach (var costomizedPropt in costomizedPropts)

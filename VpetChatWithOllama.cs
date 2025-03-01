@@ -24,6 +24,23 @@ namespace VpetChatWithOllama
             get { return _settings; }
         }
 
+        public Dictionary<String, Func<string>> GetMapping()
+        {
+
+            return new() {
+                { "{Name}",()=>MW.Main.Core.Save.Name},
+                { "{CurTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+                { "{Money}",()=>MW.Main.Core.Save.Money.ToString()},
+                { "{HostNmae}",()=>MW.Main.Core.Save.HostName},
+                { "{Exp}",()=>MW.Main.Core.Save.Exp.ToString()},
+                { "{ExpBonus}",()=>MW.Main.Core.Save.ExpBonus.ToString()},
+                { "{Strength}",()=>MW.Main.Core.Save.Strength.ToString()},
+                { "{StrengthFood}",()=>MW.Main.Core.Save.StrengthFood.ToString()},
+                { "{Feeling}",()=>MW.Main.Core.Save.Feeling.ToString()},
+                { "{Health}",()=>MW.Main.Core.Save.Health.ToString()}
+            };
+        }
+
         /// <summary>
         /// initialize the plugin
         /// </summary>
@@ -57,14 +74,6 @@ namespace VpetChatWithOllama
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
         }
 
-        public Dictionary<String,Func<string>> GetMapping()
-        {
-
-            return  new() { 
-                { "{name}",()=>MW.Main.Core.Save.Name},
-                { "{curTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
-            };
-        }
 
         /// <summary>
         /// save logic, used when exit, persiste the settings
@@ -172,7 +181,7 @@ namespace VpetChatWithOllama
             public string url;
             public string moduleName;
             public string prompt;
-            public bool addTimeAsPrompt;
+            public bool enhancePrompt;
             public string chatHistory;
             public bool supportTool;
             public bool enableStream;
@@ -183,7 +192,7 @@ namespace VpetChatWithOllama
                 this.url = "http://localhost:11434/";
                 this.moduleName = "";
                 this.prompt = "";
-                this.addTimeAsPrompt = true;
+                this.enhancePrompt = true;
                 this.chatHistory = "[]";
                 this.supportTool = false;
                 this.enableStream = false;

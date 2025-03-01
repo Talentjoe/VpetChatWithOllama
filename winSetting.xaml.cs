@@ -22,7 +22,7 @@ namespace VpetChatWithOllama
             tbPromptTemplate.Text = plugin.settings.prompt;
             ckEnableStream.IsChecked = plugin.settings.enableStream;
             cbModel.Text = plugin.settings.moduleName;
-            ckAddTime.IsChecked = plugin.settings.addTimeAsPrompt;
+            ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
             tbChatHistory.Text = plugin.COllama.saveHistory();
             ckShowR1Think.IsChecked = plugin.settings.showR1Think;
 
@@ -71,7 +71,7 @@ namespace VpetChatWithOllama
             }
             plugin.settings = new PluginInformations.PluginSettings
             {
-                addTimeAsPrompt = ckAddTime.IsChecked ?? false,
+                enhancePrompt = ckEnableStream.IsChecked ?? false,
                 url = tbAPIURL.Text,
                 moduleName = cbModel.Text?.ToString(),
                 prompt = tbPromptTemplate.Text,

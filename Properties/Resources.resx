@@ -126,8 +126,8 @@
   <data name="UseStream" xml:space="preserve">
     <value>use stream</value>
   </data>
-  <data name="AddTimeAsPrompt" xml:space="preserve">
-    <value>Add Time As Prompt</value>
+  <data name="AdvancedPrompt" xml:space="preserve">
+    <value>Advanced Prompt</value>
   </data>
   <data name="ShowThinkingProcess" xml:space="preserve">
     <value>Show Thinking Process</value>
