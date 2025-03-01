@@ -31,7 +31,7 @@ namespace VpetChatWithOllama
                 { "{Name}",()=>MW.Main.Core.Save.Name},
                 { "{CurTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
                 { "{Money}",()=>MW.Main.Core.Save.Money.ToString()},
-                { "{HostNmae}",()=>MW.Main.Core.Save.HostName},
+                { "{HostName}",()=>MW.Main.Core.Save.HostName},
                 { "{Exp}",()=>MW.Main.Core.Save.Exp.ToString()},
                 { "{ExpBonus}",()=>MW.Main.Core.Save.ExpBonus.ToString()},
                 { "{Strength}",()=>MW.Main.Core.Save.Strength.ToString()},
