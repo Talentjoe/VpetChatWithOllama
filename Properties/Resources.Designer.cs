@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VPet.Plugin.ChatGPTPlugin.Properties {
+namespace VpetChatWithOllama.Properties {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace VPet.Plugin.ChatGPTPlugin.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace VPet.Plugin.ChatGPTPlugin.Properties {
         ///   返回此类使用的缓存的 ResourceManager 实例。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VPet.Plugin.ChatGPTPlugin.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VpetChatWithOllama.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,12 +51,93 @@ namespace VPet.Plugin.ChatGPTPlugin.Properties {
         ///   使用此强类型资源类的所有资源查找执行重写。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Advanced Prompt 的本地化字符串。
+        /// </summary>
+        public static string AdvancedPrompt {
+            get {
+                return ResourceManager.GetString("AdvancedPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 API URL 的本地化字符串。
+        /// </summary>
+        public static string APIURL {
+            get {
+                return ResourceManager.GetString("APIURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Chat History 的本地化字符串。
+        /// </summary>
+        public static string ChatHistory {
+            get {
+                return ResourceManager.GetString("ChatHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Clear Memory 的本地化字符串。
+        /// </summary>
+        public static string ClearMemory {
+            get {
+                return ResourceManager.GetString("ClearMemory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Model Name 的本地化字符串。
+        /// </summary>
+        public static string ModelName {
+            get {
+                return ResourceManager.GetString("ModelName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Prompt 的本地化字符串。
+        /// </summary>
+        public static string Prompt {
+            get {
+                return ResourceManager.GetString("Prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Save Settings 的本地化字符串。
+        /// </summary>
+        public static string SaveSettings {
+            get {
+                return ResourceManager.GetString("SaveSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Show Thinking Process 的本地化字符串。
+        /// </summary>
+        public static string ShowThinkingProcess {
+            get {
+                return ResourceManager.GetString("ShowThinkingProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 use stream 的本地化字符串。
+        /// </summary>
+        public static string UseStream {
+            get {
+                return ResourceManager.GetString("UseStream", resourceCulture);
             }
         }
     }

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:VpetChatWithOllama" mc:Ignorable="d"
         xmlns:ll="clr-namespace:LinePutScript.Localization.WPF;assembly=LinePutScript.Localization.WPF"
         xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI" 
+        xmlns:res ="clr-namespace:VpetChatWithOllama.Properties"
         Title="{ll:Str 'Chat Ollama Plugin Settings'}" Width="450" FontSize="16" Height="Auto"
         ResizeMode="NoResize" WindowState="Normal" SizeToContent="Height">
 
@@ -21,27 +22,27 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
-            <RowDefinition Height="60" />
-            <RowDefinition Height="60" />
-            <RowDefinition Height="60" />
-            <RowDefinition Height="60" />
-            <RowDefinition Height="60" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="210"  />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <TextBlock VerticalAlignment="Center" ><Run Language="zh-cn" Text="接口地址"/><LineBreak/><Run Text="API URL"/></TextBlock>
-        <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Language="zh-cn" Text="模型名车"/><LineBreak/><Run Text="Model Name"/></TextBlock>
-        <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Language="zh-cn" Text="提示词"/><LineBreak/><Run Text="Prompt Template"/></TextBlock>
-        <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Language="zh-cn" Text="将时间作为提示词"/><LineBreak/><Run Text="Add Time As Prompt"/></TextBlock>
-        <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Language="zh-cn" Text="使用流式传输"  /><LineBreak/><Run Language="en-us" Text="use stream"/></TextBlock>
-        <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Language="zh-cn" Text="显示R1思考"  /><LineBreak/><Run Language="en-us" Text="Show Thinking Process"/></TextBlock>
-        <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="对话历史 "/><LineBreak/><Run Text="Chat History"/></TextBlock>
+        <TextBlock VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.APIURL}"/></TextBlock>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ModelName}"/></TextBlock>
+        <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.Prompt}"/></TextBlock>
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AdvancedPrompt}"/></TextBlock>
+        <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.UseStream}"/></TextBlock>
+        <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ShowThinkingProcess}"/></TextBlock>
+        <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.ChatHistory}"/></TextBlock>
 
         <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="http://localhost:11434/" 
-                 ToolTip="API URL to access models (e.g., OpenAI or other custom URLs)." Margin="0,5,0,5" />
+                 ToolTip="API URL to access models." Margin="0,5,0,5" />
 
         <ComboBox x:Name="cbModel" Style="{DynamicResource StandardComboBoxStyle}" Grid.Row="1" Grid.Column="2"
                   IsEditable="True" Margin="0,5,0,5" ToolTip="Select or add a model name dynamically." />
@@ -50,7 +51,7 @@
                  ToolTip="Template for initializing prompts. " AcceptsReturn="True" TextWrapping="WrapWithOverflow"
                  Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
 
-        <CheckBox x:Name="ckAddTime" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" />
+        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" />
 
@@ -59,10 +60,10 @@
                  ToolTip="Previous chat logs (read-only)." Height="200" VerticalScrollBarVisibility="Visible" 
                  AcceptsReturn="True"   IsReadOnly="True" HorizontalAlignment="Center" Width="230"  />
 
-        <Button x:Name="btnClear" pu:ButtonHelper.CornerRadius="4" Content="Clear Memory" Margin="4,4,4,4"
+        <Button x:Name="btnClear" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.ClearMemory}" Margin="4,4,4,4"
          Grid.Column="0" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11" Click="btnClear_Click"
           />
-        <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="Save Settings" Margin="4,4,4,4"
+        <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.SaveSettings}" Margin="4,4,4,4"
                 Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11"
                 Click="btnSave_Click" />
     </Grid>

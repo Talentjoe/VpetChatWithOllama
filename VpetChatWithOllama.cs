@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -15,12 +16,29 @@ namespace VpetChatWithOllama
     {
         public MessageBar MsgBar => (MessageBar)MW.Main.MsgBar;
         public OllamaChatCore COllama;
-        public ChatOllamaAPI COllamaAPI;
+        public ChatWithOllamaAPI COllamaAPI;
         private PluginInformations.PluginSettings _settings;
         public PluginInformations.PluginSettings settings
         {
-            set { _settings = value; COllama = new OllamaChatCore(value); }
+            set { _settings = value; COllama = new OllamaChatCore(value,GetMapping()); }
             get { return _settings; }
+        }
+
+        public Dictionary<String, Func<string>> GetMapping()
+        {
+
+            return new() {
+                { "{Name}",()=>MW.Main.Core.Save.Name},
+                { "{CurTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
+                { "{Money}",()=>MW.Main.Core.Save.Money.ToString()},
+                { "{HostNmae}",()=>MW.Main.Core.Save.HostName},
+                { "{Exp}",()=>MW.Main.Core.Save.Exp.ToString()},
+                { "{ExpBonus}",()=>MW.Main.Core.Save.ExpBonus.ToString()},
+                { "{Strength}",()=>MW.Main.Core.Save.Strength.ToString()},
+                { "{StrengthFood}",()=>MW.Main.Core.Save.StrengthFood.ToString()},
+                { "{Feeling}",()=>MW.Main.Core.Save.Feeling.ToString()},
+                { "{Health}",()=>MW.Main.Core.Save.Health.ToString()}
+            };
         }
 
         /// <summary>
@@ -45,8 +63,8 @@ namespace VpetChatWithOllama
             if(settings == null)
                 settings = new PluginInformations.PluginSettings();
 
-
-            MW.TalkAPI.Add(new ChatOllamaAPI(this));
+            
+            MW.TalkAPI.Add(new ChatWithOllamaAPI(this));
             var menuItem = new MenuItem()
             {
                 Header = "ChatOllamaAPI",
@@ -55,6 +73,7 @@ namespace VpetChatWithOllama
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
         }
+
 
         /// <summary>
         /// save logic, used when exit, persiste the settings
@@ -82,13 +101,13 @@ namespace VpetChatWithOllama
         public override string PluginName => "ChatWithOllama";
     }
 
-    public class ChatOllamaAPI : TalkBox
+    public class ChatWithOllamaAPI : TalkBox
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
-        public override string APIName => "ChatOllama";
+        public override string APIName => "ChatWithOllama";
 
-        public ChatOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
+        public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
             ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
@@ -100,7 +119,7 @@ namespace VpetChatWithOllama
                 DisplayThink();
             if (mainPlugin.COllama == null)
             {
-                DisplayThinkToSayRnd("请先前往设置中设置 ChatOllama API");
+                DisplayThinkToSayRnd("请先前往设置中设置 ChatWithOllama API".Translate());
                 return;
             }
             try
@@ -162,7 +181,7 @@ namespace VpetChatWithOllama
             public string url;
             public string moduleName;
             public string prompt;
-            public bool addTimeAsPrompt;
+            public bool enhancePrompt;
             public string chatHistory;
             public bool supportTool;
             public bool enableStream;
@@ -173,7 +192,7 @@ namespace VpetChatWithOllama
                 this.url = "http://localhost:11434/";
                 this.moduleName = "";
                 this.prompt = "";
-                this.addTimeAsPrompt = true;
+                this.enhancePrompt = true;
                 this.chatHistory = "[]";
                 this.supportTool = false;
                 this.enableStream = false;

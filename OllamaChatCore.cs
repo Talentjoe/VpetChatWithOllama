@@ -2,8 +2,11 @@
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VPet_Simulator.Windows.Interface;
 
 
 namespace VpetChatWithOllama
@@ -13,13 +16,14 @@ namespace VpetChatWithOllama
         private String moduleName;
         private String terminal;
         private bool supportTool;
-        private bool AddTimeToPrompt;
+        private bool enhancePrompt;
         private HttpClient sharedClient;
         private List<Dictionary<String, String>> chatingHistory;
         private String prompt;
         private List<Func<String>> costomizedPropts;
         public long tockenCount { get; private set; }
         public long promptCount { get; private set; }
+        private Dictionary<String, Func<String>> replacementMapping;
 
         /// <summary>
         /// Initialize the chat with ollama terminal
@@ -35,7 +39,7 @@ namespace VpetChatWithOllama
             String moduleName = "Qwen2.5:7b",
             String terminal = "http://localhost:11434/",
             bool supportTool = true,
-            bool AddTime = true,
+            bool enhancePrompt = true,
             List<Func<String>> costomizedPropts = null,
             String chatHistory = ""
         )
@@ -45,7 +49,7 @@ namespace VpetChatWithOllama
             this.supportTool = supportTool;
             this.chatingHistory = new List<Dictionary<String, String>>();
             this.prompt = prompt;
-            this.AddTimeToPrompt = AddTime;
+            this.enhancePrompt = enhancePrompt;
             this.costomizedPropts = costomizedPropts;
 
             if (chatHistory != "")
@@ -63,14 +67,15 @@ namespace VpetChatWithOllama
 
         }
 
-        public OllamaChatCore(PluginInformations.PluginSettings settings)
+        public OllamaChatCore(PluginInformations.PluginSettings settings,Dictionary<String,Func<String>> rp = default)
         {
+            this.replacementMapping = rp;
             this.moduleName = settings.moduleName;
             this.terminal = settings.url;
             this.supportTool = false;
             this.chatingHistory = new List<Dictionary<String, String>>();
             this.prompt = settings.prompt;
-            this.AddTimeToPrompt = settings.addTimeAsPrompt;
+            this.enhancePrompt = settings.enhancePrompt;
             this.tockenCount = 0;
             this.promptCount = 0;
             this.costomizedPropts = new List<Func<String>>();
@@ -159,7 +164,7 @@ namespace VpetChatWithOllama
             chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
 
             List<Dictionary<String, String>> tempChat = new (SystemPrompt());
-            tempChat.AddRange(chatingHistory);
+            tempChat.InsertRange(0, chatingHistory);
 
             return System.Text.Json.JsonSerializer.Serialize(new
             {
@@ -180,13 +185,18 @@ namespace VpetChatWithOllama
         {
 
             List<Dictionary<String, String>> systemPrompt = new();
+            string tempPrompt = prompt;
             if (prompt != "")
             {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", prompt } });
-            }
-            if (AddTimeToPrompt)
-            {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", "Current Time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") } });
+                if (replacementMapping != null && enhancePrompt)
+                {
+                    foreach (var replacement in replacementMapping)
+                    {
+                        tempPrompt = Regex.Replace(tempPrompt, replacement.Key, replacement.Value());
+                    }
+                }
+
+                systemPrompt.Add(new() { { "role", "system" }, { "content", tempPrompt } });
             }
             if (costomizedPropts != null)
                 foreach (var costomizedPropt in costomizedPropts)

@@ -118,30 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="APIURL" xml:space="preserve">
-    <value>API URL</value>
+    <value>接口地址</value>
   </data>
   <data name="ModelName" xml:space="preserve">
-    <value>Model Name</value>
+    <value>模型名称</value>
   </data>
   <data name="UseStream" xml:space="preserve">
-    <value>use stream</value>
+    <value>使用流式传输</value>
   </data>
   <data name="AdvancedPrompt" xml:space="preserve">
-    <value>Advanced Prompt</value>
+    <value>使用高级prompt</value>
   </data>
   <data name="ShowThinkingProcess" xml:space="preserve">
-    <value>Show Thinking Process</value>
+    <value>显示思考过程</value>
   </data>
   <data name="Prompt" xml:space="preserve">
-    <value>Prompt</value>
+    <value>提示词</value>
   </data>
   <data name="ChatHistory" xml:space="preserve">
-    <value>Chat History</value>
+    <value>对话历史</value>
   </data>
   <data name="ClearMemory" xml:space="preserve">
-    <value>Clear Memory</value>
+    <value>删除历史对话</value>
   </data>
   <data name="SaveSettings" xml:space="preserve">
-    <value>Save Settings</value>
+    <value>保存</value>
   </data>
 </root>
