@@ -40,6 +40,10 @@
         <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ShowThinkingProcess}"/></TextBlock>
         <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.ChatHistory}"/></TextBlock>
 
+        <Button x:Name="btnTest" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.TestPrompts}" Margin="125,4,10,4"
+            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="3" Click="btnTest_Click"
+          />
+        
         <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="http://localhost:11434/" 
                  ToolTip="API URL to access models." Margin="0,5,0,5" />
@@ -51,7 +55,7 @@
                  ToolTip="Template for initializing prompts. " AcceptsReturn="True" TextWrapping="WrapWithOverflow"
                  Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
 
-        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" Margin="0,0,209,0" />
+        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" Margin="0,0,156,0" />
         <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" />
         <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" />
 
@@ -66,8 +70,5 @@
         <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.SaveSettings}" Margin="4,4,4,4"
                 Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11"
                 Click="btnSave_Click" />
-        <Button x:Name="btnTest" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.TestPrompts}" Margin="129,4,10,4"
-            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="3" Click="btnTest_Click"
-          />
     </Grid>
 </Window>
