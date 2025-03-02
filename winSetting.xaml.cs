@@ -80,8 +80,8 @@ namespace VpetChatWithOllama
                 enableStream = ckEnableStream.IsChecked ?? false,
                 showR1Think = ckShowR1Think.IsChecked ?? false
             };
-
-
+            
+           
             MessageBox.Show("设置保存成功");
             this.Close();
         }

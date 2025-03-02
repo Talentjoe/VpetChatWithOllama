@@ -1,6 +1,7 @@
 ﻿using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -105,7 +106,7 @@ namespace VpetChatWithOllama
     {
         public OllamaMessageBar ollamaMessageBar;
         protected ChatWithOllama mainPlugin;
-        public override string APIName => "ChatWithOllama";
+        public override string APIName => "ChatOllama";
 
         public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
