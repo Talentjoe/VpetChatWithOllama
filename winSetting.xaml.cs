@@ -24,7 +24,14 @@ namespace VpetChatWithOllama
             ckEnableStream.IsChecked = plugin.settings.enableStream;
             cbModel.Text = plugin.settings.moduleName;
             ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
-            tbChatHistory.Text = plugin.COllama.saveHistory();
+            try
+            {
+                tbChatHistory.Text = plugin.settings.chatHistory;
+            }
+            catch
+            {
+                tbChatHistory.Text = "[]";
+            }
             ckShowR1Think.IsChecked = plugin.settings.showR1Think;
 
             this.Loaded += WinSetting_Loaded;
