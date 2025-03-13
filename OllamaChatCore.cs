@@ -24,6 +24,7 @@ namespace VpetChatWithOllama
         public long tockenCount { get; private set; }
         public long promptCount { get; private set; }
         private Dictionary<String, Func<String>> replacementMapping;
+        private String promptBeforeUserInput;
 
         /// <summary>
         /// Initialize the chat with ollama terminal
@@ -41,7 +42,8 @@ namespace VpetChatWithOllama
             bool supportTool = true,
             bool enhancePrompt = true,
             List<Func<String>> costomizedPropts = null,
-            String chatHistory = ""
+            String chatHistory = "",
+            String promptBeforeUserInput = ""
         )
         {
             this.moduleName = moduleName.ToLower();
@@ -51,6 +53,7 @@ namespace VpetChatWithOllama
             this.prompt = prompt;
             this.enhancePrompt = enhancePrompt;
             this.costomizedPropts = costomizedPropts;
+            this.promptBeforeUserInput = promptBeforeUserInput;
 
             if (chatHistory != "")
             {
@@ -79,6 +82,7 @@ namespace VpetChatWithOllama
             this.tockenCount = 0;
             this.promptCount = 0;
             this.costomizedPropts = new List<Func<String>>();
+            this.promptBeforeUserInput = settings.promptBeforeUserInput;
 
             sharedClient = new()
             {
@@ -109,6 +113,47 @@ namespace VpetChatWithOllama
                 }
                 return moduleNames;
 
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Failed to get modules, Check if ollama is running.");
+            }
+        }
+
+        /// <summary>
+        /// Get modules from the ollama terminal
+        /// </summary>
+        /// <returns>The list of module name</returns>
+        /// <exception cref="Exception">When not able to get the response</exception>
+        public static async Task<List<String>> getAllModules(String url)
+        {
+            try
+            {
+                HttpClient client = new()
+                {
+                    BaseAddress = new Uri(url),
+                };
+                HttpResponseMessage response = await client.GetAsync("api/tags");
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception(jsonResponse);
+                }
+                if (jsonResponse == null)
+                {
+                    return default;
+                }
+
+                JObject modules = JObject.Parse(jsonResponse);
+                List<String> moduleNames = new List<String>();
+
+                foreach (var module in modules["models"])
+                {
+                    moduleNames.Add(((String)module["name"]).ToLower());
+                }
+
+                return moduleNames;
             }
             catch (Exception e)
             {
@@ -161,7 +206,7 @@ namespace VpetChatWithOllama
         /// <returns>the content ready to sent to the server</returns>
         private String GenerateContent(string nextSentence, bool ifStream)
         {
-            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", nextSentence } });
+            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", getAccuralPrompt( promptBeforeUserInput) + nextSentence } });
 
             List<Dictionary<String, String>> tempChat = new (SystemPrompt());
             tempChat.InsertRange(0, chatingHistory);
@@ -174,6 +219,17 @@ namespace VpetChatWithOllama
             });
         }
 
+        private string getAccuralPrompt(String s)
+        {
+            if (replacementMapping != null && enhancePrompt)
+            {
+                foreach (var replacement in replacementMapping)
+                {
+                    s = Regex.Replace(s, replacement.Key, replacement.Value());
+                }
+            }
+            return s;
+        }
 
         /// <summary>
         /// adding system prompt to the chat history
@@ -188,15 +244,7 @@ namespace VpetChatWithOllama
             string tempPrompt = prompt;
             if (prompt != "")
             {
-                if (replacementMapping != null && enhancePrompt)
-                {
-                    foreach (var replacement in replacementMapping)
-                    {
-                        tempPrompt = Regex.Replace(tempPrompt, replacement.Key, replacement.Value());
-                    }
-                }
-
-                systemPrompt.Add(new() { { "role", "system" }, { "content", tempPrompt } });
+                systemPrompt.Add(new() { { "role", "system" }, { "content", getAccuralPrompt( tempPrompt) } });
             }
             if (costomizedPropts != null)
                 foreach (var costomizedPropt in costomizedPropts)

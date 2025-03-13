@@ -55,7 +55,7 @@ namespace VpetChatWithOllama
         {
             try
             {
-                List<string> modules = await plugin.COllama.getAllModules();
+                List<string> modules = await OllamaChatCore.getAllModules(tbAPIURL.Text);
                 cbModel.ItemsSource = new ObservableCollection<string>(modules);
             }
             catch (Exception ex)
