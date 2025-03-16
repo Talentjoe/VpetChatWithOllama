@@ -147,4 +147,7 @@
   <data name="TestPrompts" xml:space="preserve">
     <value>Test Prompt</value>
   </data>
+  <data name="UserPrompt" xml:space="preserve">
+    <value>User Prompt</value>
+  </data>
 </root>

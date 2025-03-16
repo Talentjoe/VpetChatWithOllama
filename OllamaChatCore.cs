@@ -206,7 +206,7 @@ namespace VpetChatWithOllama
         /// <returns>the content ready to sent to the server</returns>
         private String GenerateContent(string nextSentence, bool ifStream)
         {
-            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", getAccuralPrompt( promptBeforeUserInput) + nextSentence } });
+            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", getAccuralPrompt(promptBeforeUserInput) + nextSentence } });
 
             List<Dictionary<String, String>> tempChat = new (SystemPrompt());
             tempChat.InsertRange(0, chatingHistory);
