@@ -35,18 +35,18 @@
         <TextBlock VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.APIURL}"/></TextBlock>
         <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ModelName}"/></TextBlock>
         <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.Prompt}"/></TextBlock>
-        <TextBlock Grid.Row="3" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AdvancedPrompt}"/></TextBlock>
-        <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.UseStream}"/></TextBlock>
+        <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AdvancedPrompt}"/></TextBlock>
+        <TextBlock Grid.Row="5" VerticalAlignment="Center" Grid.Column="2" Margin="47,0,77,0" ><Run Text="{x:Static res:Resources.UseStream}"/></TextBlock>
         <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ShowThinkingProcess}"/></TextBlock>
         <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.ChatHistory}"/></TextBlock>
 
         <Button x:Name="btnTest" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.TestPrompts}" Margin="125,4,10,4"
-            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="3" Click="btnTest_Click"
+            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="4" Click="btnTest_Click"
           />
-        
+
         <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="http://localhost:11434/" 
-                 ToolTip="API URL to access models." Margin="0,5,0,5" />
+                 ToolTip="API URL to access models." Margin="0,5,0,5" LostFocus="LostFocus" />
 
         <ComboBox x:Name="cbModel" Style="{DynamicResource StandardComboBoxStyle}" Grid.Row="1" Grid.Column="2"
                   IsEditable="True" Margin="0,5,0,5" ToolTip="Select or add a model name dynamically." />
@@ -55,9 +55,9 @@
                  ToolTip="Template for initializing prompts. " AcceptsReturn="True" TextWrapping="WrapWithOverflow"
                  Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
 
-        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3" Grid.Column="2" Content="" Margin="0,0,156,0" />
-        <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" />
-        <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" />
+        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" Margin="0,0,156,0" />
+        <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" Margin="209,0,0,0" />
+        <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" Margin="0,0,239,0" />
 
         <TextBox x:Name="tbChatHistory" Grid.Row="6" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
                  FontSize="16" Text="[]" TextWrapping="WrapWithOverflow"
@@ -70,5 +70,10 @@
         <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.SaveSettings}" Margin="4,4,4,4"
                 Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11"
                 Click="btnSave_Click" />
+        <TextBlock Grid.Row="3" VerticalAlignment="Center" Grid.ColumnSpan="2" ><Run Text="{x:Static res:Resources.UserPrompt}"/></TextBlock>
+        <TextBox x:Name="tbUserPromptTemplate" Grid.Row="3" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
+            FontSize="16" pu:TextBoxHelper.Watermark="Enter user default prompt. "
+            ToolTip="Template for initializing user prompts." AcceptsReturn="True" TextWrapping="WrapWithOverflow"
+            Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
     </Grid>
 </Window>

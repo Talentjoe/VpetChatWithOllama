@@ -19,15 +19,28 @@ namespace VpetChatWithOllama
             this.plugin = plugin;
             InitializeComponent();
 
-            tbAPIURL.Text = plugin.settings.url;
+            tbAPIURL.Text = plugin.settings.url == "" ? "http://localhost:11434/" : plugin.settings.url;
             tbPromptTemplate.Text = plugin.settings.prompt;
             ckEnableStream.IsChecked = plugin.settings.enableStream;
             cbModel.Text = plugin.settings.moduleName;
             ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
-            tbChatHistory.Text = plugin.COllama.saveHistory();
+            tbUserPromptTemplate.Text = plugin.settings.promptBeforeUserInput;
+            try
+            {
+                tbChatHistory.Text = plugin.COllama.saveHistory();
+            }
+            catch
+            {
+                tbChatHistory.Text = "[]";
+            }
             ckShowR1Think.IsChecked = plugin.settings.showR1Think;
 
             this.Loaded += WinSetting_Loaded;
+        }
+
+        public void LostFocus(object sender, RoutedEventArgs e)
+        {
+            LoadModulesAsync();
         }
 
         /// <summary>
@@ -48,7 +61,7 @@ namespace VpetChatWithOllama
         {
             try
             {
-                List<string> modules = await plugin.COllama.getAllModules();
+                List<string> modules = await OllamaChatCore.getAllModules(tbAPIURL.Text);
                 cbModel.ItemsSource = new ObservableCollection<string>(modules);
             }
             catch (Exception ex)
@@ -78,7 +91,8 @@ namespace VpetChatWithOllama
                 prompt = tbPromptTemplate.Text,
                 chatHistory = tbChatHistory.Text,
                 enableStream = ckEnableStream.IsChecked ?? false,
-                showR1Think = ckShowR1Think.IsChecked ?? false
+                showR1Think = ckShowR1Think.IsChecked ?? false,
+                promptBeforeUserInput = tbUserPromptTemplate.Text
             };
             
            
@@ -100,14 +114,16 @@ namespace VpetChatWithOllama
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            String temp = tbPromptTemplate.Text;
+            String PromptTemp = tbPromptTemplate.Text;
+            String UserPromptTemp = tbUserPromptTemplate.Text;
 
             foreach (var item in plugin.GetMapping())
             {
-                temp = Regex.Replace(temp, item.Key, item.Value());
+                PromptTemp = Regex.Replace(PromptTemp, item.Key, item.Value());
+                UserPromptTemp = Regex.Replace(UserPromptTemp, item.Key, item.Value());
             }
 
-            MessageBox.Show(temp,"Sample Prompt");
+            MessageBox.Show("System Prompt:\n"+ PromptTemp + "\nUser Prompt:\n"+ UserPromptTemp, "Sample Prompt");
         }
     }
 }

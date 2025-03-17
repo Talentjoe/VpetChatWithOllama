@@ -147,4 +147,7 @@
   <data name="TestPrompts" xml:space="preserve">
     <value>测试提示词</value>
   </data>
+  <data name="UserPrompt" xml:space="preserve">
+    <value>用户提示词</value>
+  </data>
 </root>

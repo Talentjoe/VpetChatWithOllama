@@ -25,9 +25,10 @@ namespace VpetChatWithOllama
             get { return _settings; }
         }
 
+        
+
         public Dictionary<String, Func<string>> GetMapping()
         {
-
             return new() {
                 { "{Name}",()=>MW.Main.Core.Save.Name},
                 { "{CurTime}",()=> DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") },
@@ -187,6 +188,7 @@ namespace VpetChatWithOllama
             public bool supportTool;
             public bool enableStream;
             public bool showR1Think;
+            public string promptBeforeUserInput;
 
             public PluginSettings()
             {
@@ -198,6 +200,7 @@ namespace VpetChatWithOllama
                 this.supportTool = false;
                 this.enableStream = false;
                 this.showR1Think = true;
+                this.promptBeforeUserInput = "";
             }
         }
 
