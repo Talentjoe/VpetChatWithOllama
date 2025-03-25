@@ -25,8 +25,6 @@ namespace VpetChatWithOllama
             get { return _settings; }
         }
 
-        
-
         public Dictionary<String, Func<string>> GetMapping()
         {
             return new() {
@@ -189,6 +187,7 @@ namespace VpetChatWithOllama
             public bool enableStream;
             public bool showR1Think;
             public string promptBeforeUserInput;
+            public long tokenCount;
 
             public PluginSettings()
             {
@@ -201,6 +200,7 @@ namespace VpetChatWithOllama
                 this.enableStream = false;
                 this.showR1Think = true;
                 this.promptBeforeUserInput = "";
+                this.tokenCount = 0;
             }
         }
 

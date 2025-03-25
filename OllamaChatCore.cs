@@ -80,7 +80,7 @@ namespace VpetChatWithOllama
             this.prompt = settings.prompt;
             this.enhancePrompt = settings.enhancePrompt;
             this.tockenCount = 0;
-            this.promptCount = 0;
+            this.promptCount = settings.tokenCount;
             this.costomizedPropts = new List<Func<String>>();
             this.promptBeforeUserInput = settings.promptBeforeUserInput;
 
