@@ -25,7 +25,7 @@ namespace VpetChatWithOllama
             cbModel.Text = plugin.settings.moduleName;
             ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
             tbUserPromptTemplate.Text = plugin.settings.promptBeforeUserInput;
-            tbTokenCount.Text = plugin.COllama.tockenCount.ToString();
+            tbTokenCount.Text = plugin.COllama.TokenCount.ToString();
             try
             {
                 tbChatHistory.Text = plugin.COllama.saveHistory();
