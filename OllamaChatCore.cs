@@ -21,8 +21,8 @@ namespace VpetChatWithOllama
         private readonly List<Dictionary<string, string>> _chattingHistory;
         private readonly string _prompt;
         private readonly List<Func<string>> _customizedPrompts;
-        public long TokenCount { get; private set; }
-        public long PromptCount { get; private set; }
+        public long TokenCount { get; set; }
+        public long PromptCount { get; set; }
         private readonly Dictionary<string, Func<string>> _replacementMapping;
         private readonly string _promptBeforeUserInput;
 
@@ -78,8 +78,8 @@ namespace VpetChatWithOllama
             this._chattingHistory = new List<Dictionary<string, string>>();
             this._prompt = settings.prompt;
             this._enhancePrompt = settings.enhancePrompt;
-            this.TokenCount = 0;
-            this.PromptCount = settings.tokenCount;
+            this.TokenCount = settings.tokenCount;
+            this.PromptCount = 0;
             this._customizedPrompts = new List<Func<string>>();
             this._promptBeforeUserInput = settings.promptBeforeUserInput;
 

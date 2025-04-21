@@ -93,6 +93,7 @@ namespace VpetChatWithOllama
             if (settings != null)
             {
                 _settings.chatHistory = COllama.saveHistory();
+                _settings.tokenCount = COllama.TokenCount;
                 File.WriteAllText(ExtensionValue.BaseDirectory + @"\OllamaSettings.json",
                     JsonConvert.SerializeObject(settings));
             }
