@@ -150,4 +150,7 @@
   <data name="UserPrompt" xml:space="preserve">
     <value>User Prompt</value>
   </data>
+  <data name="TokenCount" xml:space="preserve">
+    <value>Token Count</value>
+  </data>
 </root>

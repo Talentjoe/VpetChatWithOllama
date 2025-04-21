@@ -150,4 +150,7 @@
   <data name="UserPrompt" xml:space="preserve">
     <value>用户提示词</value>
   </data>
+  <data name="TokenCount" xml:space="preserve">
+    <value>Token使用量</value>
+  </data>
 </root>

@@ -13,18 +13,18 @@ namespace VpetChatWithOllama
 {
     public class OllamaChatCore
     {
-        private String moduleName;
-        private String terminal;
-        private bool supportTool;
-        private bool enhancePrompt;
-        private HttpClient sharedClient;
-        private List<Dictionary<String, String>> chatingHistory;
-        private String prompt;
-        private List<Func<String>> costomizedPropts;
-        public long tockenCount { get; private set; }
-        public long promptCount { get; private set; }
-        private Dictionary<String, Func<String>> replacementMapping;
-        private String promptBeforeUserInput;
+        private string _moduleName;
+        private string _terminal;
+        private bool _supportTool;
+        private readonly bool _enhancePrompt;
+        private readonly HttpClient _sharedClient;
+        private readonly List<Dictionary<string, string>> _chattingHistory;
+        private readonly string _prompt;
+        private readonly List<Func<string>> _customizedPrompts;
+        public long TokenCount { get; set; }
+        public long PromptCount { get; set; }
+        private readonly Dictionary<string, Func<string>> _replacementMapping;
+        private readonly string _promptBeforeUserInput;
 
         /// <summary>
         /// Initialize the chat with ollama terminal
@@ -36,62 +36,62 @@ namespace VpetChatWithOllama
         /// <param name="AddTime">Add time to the prompt</param>
         /// <param name="chatHistory">Previous chat</param>
         public OllamaChatCore(
-            String prompt = "",
-            String moduleName = "Qwen2.5:7b",
-            String terminal = "http://localhost:11434/",
+            string prompt = "",
+            string moduleName = "Qwen2.5:7b",
+            string terminal = "http://localhost:11434/",
             bool supportTool = true,
             bool enhancePrompt = true,
-            List<Func<String>> costomizedPropts = null,
-            String chatHistory = "",
-            String promptBeforeUserInput = ""
+            List<Func<string>> customizedPrompts = null,
+            string chatHistory = "",
+            string promptBeforeUserInput = ""
         )
         {
-            this.moduleName = moduleName.ToLower();
-            this.terminal = terminal;
-            this.supportTool = supportTool;
-            this.chatingHistory = new List<Dictionary<String, String>>();
-            this.prompt = prompt;
-            this.enhancePrompt = enhancePrompt;
-            this.costomizedPropts = costomizedPropts;
-            this.promptBeforeUserInput = promptBeforeUserInput;
+            this._moduleName = moduleName.ToLower();
+            this._terminal = terminal;
+            this._supportTool = supportTool;
+            this._chattingHistory = new List<Dictionary<string, string>>();
+            this._prompt = prompt;
+            this._enhancePrompt = enhancePrompt;
+            this._customizedPrompts = customizedPrompts;
+            this._promptBeforeUserInput = promptBeforeUserInput;
 
             if (chatHistory != "")
             {
-                chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(chatHistory);
+                _chattingHistory = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(chatHistory);
             }
 
-            this.tockenCount = 0;
-            this.promptCount = 0;
+            this.TokenCount = 0;
+            this.PromptCount = 0;
 
-            sharedClient = new()
+            _sharedClient = new()
             {
                 BaseAddress = new Uri(terminal),
             };
-
         }
 
-        public OllamaChatCore(PluginInformations.PluginSettings settings,Dictionary<String,Func<String>> rp = default)
+        public OllamaChatCore(PluginInformations.PluginSettings settings, Dictionary<string, Func<string>> rp = default)
         {
-            this.replacementMapping = rp;
-            this.moduleName = settings.moduleName;
-            this.terminal = settings.url;
-            this.supportTool = false;
-            this.chatingHistory = new List<Dictionary<String, String>>();
-            this.prompt = settings.prompt;
-            this.enhancePrompt = settings.enhancePrompt;
-            this.tockenCount = 0;
-            this.promptCount = 0;
-            this.costomizedPropts = new List<Func<String>>();
-            this.promptBeforeUserInput = settings.promptBeforeUserInput;
+            this._replacementMapping = rp;
+            this._moduleName = settings.moduleName;
+            this._terminal = settings.url;
+            this._supportTool = false;
+            this._chattingHistory = new List<Dictionary<string, string>>();
+            this._prompt = settings.prompt;
+            this._enhancePrompt = settings.enhancePrompt;
+            this.TokenCount = settings.tokenCount;
+            this.PromptCount = 0;
+            this._customizedPrompts = new List<Func<string>>();
+            this._promptBeforeUserInput = settings.promptBeforeUserInput;
 
-            sharedClient = new()
+            _sharedClient = new()
             {
-                BaseAddress = new Uri(terminal),
+                BaseAddress = new Uri(_terminal),
             };
 
             if (settings.chatHistory != "")
             {
-                chatingHistory = JsonConvert.DeserializeObject<List<Dictionary<String, String>>>(settings.chatHistory);
+                _chattingHistory =
+                    JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(settings.chatHistory);
             }
         }
 
@@ -100,19 +100,19 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <returns>The list of module name</returns>
         /// <exception cref="Exception">When not able to get the response</exception>
-        public async Task<List<String>> getAllModules()
+        public async Task<List<string>> getAllModules()
         {
             try
             {
                 JObject modules = await GetResponse(null, "api/tags");
-                List<String> moduleNames = new List<String>();
+                List<string> moduleNames = new List<string>();
 
                 foreach (var module in modules["models"])
                 {
-                    moduleNames.Add(((String)module["name"]).ToLower());
+                    moduleNames.Add(((string)module["name"]).ToLower());
                 }
-                return moduleNames;
 
+                return moduleNames;
             }
             catch (Exception e)
             {
@@ -125,7 +125,7 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <returns>The list of module name</returns>
         /// <exception cref="Exception">When not able to get the response</exception>
-        public static async Task<List<String>> getAllModules(String url)
+        public static async Task<List<string>> getAllModules(string url)
         {
             try
             {
@@ -140,17 +140,18 @@ namespace VpetChatWithOllama
                 {
                     throw new Exception(jsonResponse);
                 }
+
                 if (jsonResponse == null)
                 {
                     return default;
                 }
 
                 JObject modules = JObject.Parse(jsonResponse);
-                List<String> moduleNames = new List<String>();
+                List<string> moduleNames = new List<string>();
 
                 foreach (var module in modules["models"])
                 {
-                    moduleNames.Add(((String)module["name"]).ToLower());
+                    moduleNames.Add(((string)module["name"]).ToLower());
                 }
 
                 return moduleNames;
@@ -166,7 +167,7 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
         /// <returns></returns>
-        public async Task<String> Chat(String nextSentence)
+        public async Task<string> Chat(string nextSentence)
         {
             StringContent stringContent = new(GenerateContent(nextSentence, false), Encoding.UTF8, "application/json");
 
@@ -183,13 +184,12 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
         /// <returns></returns>
-        public async Task<String> ChatWithStream(String nextSentence, Action<string> updateTrigger)
+        public async Task<string> ChatWithStream(string nextSentence, Action<string> updateTrigger)
         {
-
             StringContent postRequests = new(
-                    GenerateContent(nextSentence, true),
-                    Encoding.UTF8,
-                    "application/json");
+                GenerateContent(nextSentence, true),
+                Encoding.UTF8,
+                "application/json");
 
             //Console.WriteLine(postRequests.ReadAsStringAsync().Result);
 
@@ -204,30 +204,32 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence">the next sentce ready to chat</param>
         /// <returns>the content ready to sent to the server</returns>
-        private String GenerateContent(string nextSentence, bool ifStream)
+        private string GenerateContent(string nextSentence, bool ifStream)
         {
-            chatingHistory.Add(new Dictionary<String, String>() { { "role", "user" }, { "content", getAccuralPrompt(promptBeforeUserInput) + nextSentence } });
+            _chattingHistory.Add(new Dictionary<string, string>()
+                { { "role", "user" }, { "content", getAccuralPrompt(_promptBeforeUserInput) + nextSentence } });
 
-            List<Dictionary<String, String>> tempChat = new (SystemPrompt());
-            tempChat.InsertRange(0, chatingHistory);
+            List<Dictionary<string, string>> tempChat = new(SystemPrompt());
+            tempChat.InsertRange(0, _chattingHistory);
 
             return System.Text.Json.JsonSerializer.Serialize(new
             {
-                model = moduleName,
+                model = _moduleName,
                 messages = tempChat,
                 stream = ifStream
             });
         }
 
-        private string getAccuralPrompt(String s)
+        private string getAccuralPrompt(string s)
         {
-            if (replacementMapping != null && enhancePrompt)
+            if (_replacementMapping != null && _enhancePrompt)
             {
-                foreach (var replacement in replacementMapping)
+                foreach (var replacement in _replacementMapping)
                 {
                     s = Regex.Replace(s, replacement.Key, replacement.Value());
                 }
             }
+
             return s;
         }
 
@@ -237,20 +239,22 @@ namespace VpetChatWithOllama
         /// <returns>
         ///     a dictionary with role and content
         /// </returns>
-        private List<Dictionary<String, String>> SystemPrompt()
+        private List<Dictionary<string, string>> SystemPrompt()
         {
-
-            List<Dictionary<String, String>> systemPrompt = new();
-            string tempPrompt = prompt;
-            if (prompt != "")
+            List<Dictionary<string, string>> systemPrompt = new();
+            var tempPrompt = _prompt;
+            if (_prompt != "")
             {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", getAccuralPrompt( tempPrompt) } });
+                systemPrompt.Add(new() { { "role", "system" }, { "content", getAccuralPrompt(tempPrompt) } });
             }
-            if (costomizedPropts != null)
-                foreach (var costomizedPropt in costomizedPropts)
-                {
-                    systemPrompt.Add(new() { { "role", "system" }, { "content", costomizedPropt() } });
-                }
+
+            if (!_customizedPrompts.Any())
+                return systemPrompt;
+            
+            foreach (var costomizedPropt in _customizedPrompts)
+            {
+                systemPrompt.Add(new() { { "role", "system" }, { "content", costomizedPropt() } });
+            }
 
             return systemPrompt;
         }
@@ -262,10 +266,10 @@ namespace VpetChatWithOllama
         /// <returns>the content ai generate</returns>
         private String DealWithChatResponse(ChatResponse chatResponse)
         {
-            promptCount += chatResponse.prompt_eval_count;
-            tockenCount += chatResponse.eval_count;
+            PromptCount += chatResponse.prompt_eval_count;
+            TokenCount += chatResponse.eval_count;
 
-            chatingHistory.Add(new Dictionary<string, string>(chatResponse.message));
+            _chattingHistory.Add(new Dictionary<string, string>(chatResponse.message));
 
             return chatResponse.message["content"];
         }
@@ -277,33 +281,35 @@ namespace VpetChatWithOllama
         /// <param name="url">the url to post the message</param>
         /// <param name="updateTrigger">the trigger of updating chat content</param>
         /// <returns>Chat Response which include the response form the llm and the prompt usage</returns>
-        private async Task<ChatResponse> StreamResponse(StringContent sendingMessage, String url, Action<string> updateTrigger)
+        private async Task<ChatResponse> StreamResponse(StringContent sendingMessage, string url,
+            Action<string> updateTrigger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = sendingMessage
             };
 
-            HttpResponseMessage response = null;
-            Stream responseStream = null;
-            StreamReader reader = null;
+            HttpResponseMessage response ;
+            Stream responseStream ;
+            StreamReader reader;
             try
             {
-                response = await sharedClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                response = await _sharedClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                 responseStream = await response.Content.ReadAsStreamAsync();
                 reader = new StreamReader(responseStream);
 
                 StringBuilder chatResponse = new();
-                int prompt_eval_count = 0;
-                int eval_count = 0;
+                var prompt_eval_count = 0;
+                var eval_count = 0;
 
                 while (!reader.EndOfStream)
                 {
-                    string line = await reader.ReadLineAsync();
+                    var line = await reader.ReadLineAsync();
                     if (string.IsNullOrWhiteSpace(line))
                     {
                         continue;
                     }
+
                     using (JsonDocument doc = JsonDocument.Parse(line))
                     {
                         string content = doc?.RootElement.GetProperty("message").GetProperty("content").GetString();
@@ -317,37 +323,29 @@ namespace VpetChatWithOllama
 
                             return new ChatResponse()
                             {
-                                message = new Dictionary<string, string>() {
-                                    {"role", doc?.RootElement.GetProperty("message").GetProperty("role").GetString() },
+                                message = new Dictionary<string, string>()
+                                {
+                                    { "role", doc?.RootElement.GetProperty("message").GetProperty("role").GetString() },
                                     { "content", chatResponse.ToString() }
                                 },
                                 prompt_eval_count = prompt_eval_count,
                                 eval_count = eval_count
                             };
-
                         }
-
-
                     }
                 }
-
             }
             catch (TaskCanceledException)
             {
                 Console.WriteLine("请求超时或被取消");
             }
-            return default;
 
+            return default;
         }
 
         public String saveHistory()
         {
-            return JsonConvert.SerializeObject(chatingHistory);
-        }
-
-        public void changeModule(String moduleName)
-        {
-            this.moduleName = moduleName;
+            return JsonConvert.SerializeObject(_chattingHistory);
         }
 
         /// <summary>
@@ -359,20 +357,6 @@ namespace VpetChatWithOllama
             public int prompt_eval_count { get; set; }
             public int eval_count { get; set; }
         }
-
-        /// <summary>
-        /// The structure to deserialize the response from the module exist API
-        /// </summary>
-        struct ModuleExistResponse
-        {
-            public struct Module
-            {
-                public String name { get; set; }
-                public Dictionary<String, String> details { get; set; }
-            }
-            public List<Module> models { get; set; }
-        }
-
 
         /// <summary>
         ///     get post or get response from the ollama terminal
@@ -387,11 +371,11 @@ namespace VpetChatWithOllama
 
             if (sendingMessage == null)
             {
-                response = await sharedClient.GetAsync(url);
+                response = await _sharedClient.GetAsync(url);
             }
             else
             {
-                response = await sharedClient.PostAsync(url, sendingMessage);
+                response = await _sharedClient.PostAsync(url, sendingMessage);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -410,7 +394,5 @@ namespace VpetChatWithOllama
 
             return jobject;
         }
-
     }
-
 }

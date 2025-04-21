@@ -25,6 +25,7 @@ namespace VpetChatWithOllama
             cbModel.Text = plugin.settings.moduleName;
             ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
             tbUserPromptTemplate.Text = plugin.settings.promptBeforeUserInput;
+            tbTokenCount.Text = plugin.COllama.TokenCount.ToString();
             try
             {
                 tbChatHistory.Text = plugin.COllama.saveHistory();
@@ -92,7 +93,8 @@ namespace VpetChatWithOllama
                 chatHistory = tbChatHistory.Text,
                 enableStream = ckEnableStream.IsChecked ?? false,
                 showR1Think = ckShowR1Think.IsChecked ?? false,
-                promptBeforeUserInput = tbUserPromptTemplate.Text
+                promptBeforeUserInput = tbUserPromptTemplate.Text,
+                tokenCount = long.TryParse(tbTokenCount.Text, out long tokenCount) ? tokenCount : 0,
             };
             
            
@@ -109,7 +111,11 @@ namespace VpetChatWithOllama
         {
             MessageBoxResult res = MessageBox.Show("你确定要删除历史对话吗？".Translate(), "删除历史对话".Translate(), MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (res == MessageBoxResult.Yes)
+            {
                 tbChatHistory.Text = "[]";
+                tbTokenCount.Text = 0.ToString();
+            }
+
         }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)

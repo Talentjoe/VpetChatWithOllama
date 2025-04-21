@@ -30,7 +30,6 @@ namespace VpetChatWithOllama
             {
                 Panel.SetZIndex(this, 0);
             }
-            closeTimer?.Stop();
             MessageBoxContent.Children.Clear();
             sb.Clear();
             TText.Text = ""; // 初始清空
@@ -68,14 +67,23 @@ namespace VpetChatWithOllama
 
         public void FinishText()
         {
-            // 初始化定时器：如果 `N` 秒内没有新的输入，则关闭窗口
+            if (closeTimer != null)
+            {
+                closeTimer.Stop();
+            }
+
             closeTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(Math.Max(TText.Text.Length * 0.05 ,10)) // 设定超时时间
+                Interval = TimeSpan.FromSeconds(Math.Max(TText.Text.Length * 0.05, 5))
             };
 
-            closeTimer.Tick += (s, e) => this.CloseWin(); // 触发时关闭
+            closeTimer.Tick += CloseTimer_Tick;
             closeTimer.Start();
+        }
+
+        private void CloseTimer_Tick(object sender, EventArgs e)
+        {
+            CloseWin();
         }
 
         private void ResetCloseTimer()
