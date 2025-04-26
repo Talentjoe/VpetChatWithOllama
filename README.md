@@ -45,3 +45,5 @@ Currently you are allow to use following key word as prompt.
 When inputting the key work you do not need to include double quotation but do need to include braces e.g.：
     current time is:{CurTime}, your name is: {Name}.
 You may check your input prompt by clicking at the "Test Prompt" button below the prompt. It shows what system prompt the module will get.
+
+未来更新：互动时增加主动对话
