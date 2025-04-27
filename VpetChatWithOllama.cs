@@ -188,7 +188,7 @@ namespace VpetChatWithOllama
                             showText = true;
                         }
                     };
-                    String res = await mainPlugin.COllama.ChatWithStream(text, action);
+                    String res = await mainPlugin.COllama.Chat(text, action);
 
                     Dispatcher.Invoke(() => mainPlugin.MW.Main.DisplayDefault());
                     Dispatcher.Invoke(() => ollamaMessageBar.FinishText());

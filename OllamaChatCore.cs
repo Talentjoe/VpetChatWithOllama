@@ -32,9 +32,11 @@ namespace VpetChatWithOllama
         /// <param name="prompt">The system prompt</param>
         /// <param name="moduleName">The module to run with</param>
         /// <param name="terminal">Ollama api address and port</param>
-        /// <param name="supportTool">If use tool to suport more features</param>
-        /// <param name="AddTime">Add time to the prompt</param>
+        /// <param name="supportTool">If use tool to support more features</param>
         /// <param name="chatHistory">Previous chat</param>
+        /// <param name="enhancePrompt">Use enhance prompt mode</param>
+        /// <param name="customizedPrompts">Customized prompts input</param>
+        /// <param name="promptBeforeUserInput">The prompt before user input</param>
         public OllamaChatCore(
             string prompt = "",
             string moduleName = "Qwen2.5:7b",
@@ -91,7 +93,8 @@ namespace VpetChatWithOllama
             if (settings.chatHistory != "")
             {
                 _chattingHistory =
-                    JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(settings.chatHistory);
+                    JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(settings.chatHistory) ?? 
+                        new List<Dictionary<string, string>>();
             }
         }
 
@@ -184,14 +187,12 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
         /// <returns></returns>
-        public async Task<string> ChatWithStream(string nextSentence, Action<string> updateTrigger)
+        public async Task<string> Chat(string nextSentence, Action<string> updateTrigger)
         {
             StringContent postRequests = new(
                 GenerateContent(nextSentence, true),
                 Encoding.UTF8,
                 "application/json");
-
-            //Console.WriteLine(postRequests.ReadAsStringAsync().Result);
 
             ChatResponse chatResponse = await StreamResponse(postRequests, "api/chat", updateTrigger);
 
@@ -203,6 +204,7 @@ namespace VpetChatWithOllama
         /// return the string content ready to be sent to server
         /// </summary>
         /// <param name="nextSentence">the next sentce ready to chat</param>
+        /// <param name="ifStream">If use stream mode</param>
         /// <returns>the content ready to sent to the server</returns>
         private string GenerateContent(string nextSentence, bool ifStream)
         {
@@ -222,7 +224,7 @@ namespace VpetChatWithOllama
 
         private string getAccuralPrompt(string s)
         {
-            if (_replacementMapping != null && _enhancePrompt)
+            if (_enhancePrompt)
             {
                 foreach (var replacement in _replacementMapping)
                 {
@@ -251,9 +253,9 @@ namespace VpetChatWithOllama
             if (!_customizedPrompts.Any())
                 return systemPrompt;
             
-            foreach (var costomizedPropt in _customizedPrompts)
+            foreach (var customizedPrompt in _customizedPrompts)
             {
-                systemPrompt.Add(new() { { "role", "system" }, { "content", costomizedPropt() } });
+                systemPrompt.Add(new() { { "role", "system" }, { "content", customizedPrompt() } });
             }
 
             return systemPrompt;
@@ -289,18 +291,15 @@ namespace VpetChatWithOllama
                 Content = sendingMessage
             };
 
-            HttpResponseMessage response ;
-            Stream responseStream ;
-            StreamReader reader;
             try
             {
-                response = await _sharedClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                responseStream = await response.Content.ReadAsStreamAsync();
-                reader = new StreamReader(responseStream);
+                var response = await _sharedClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead) ;
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var reader = new StreamReader(responseStream);
 
                 StringBuilder chatResponse = new();
-                var prompt_eval_count = 0;
-                var eval_count = 0;
+                var promptEvalCount = 0;
+                var evalCount = 0;
 
                 while (!reader.EndOfStream)
                 {
@@ -318,8 +317,8 @@ namespace VpetChatWithOllama
 
                         if (doc.RootElement.GetProperty("done").GetBoolean() == true)
                         {
-                            prompt_eval_count = doc.RootElement.GetProperty("prompt_eval_count").GetInt32();
-                            eval_count = doc.RootElement.GetProperty("eval_count").GetInt32();
+                            promptEvalCount = doc.RootElement.GetProperty("prompt_eval_count").GetInt32();
+                            evalCount = doc.RootElement.GetProperty("eval_count").GetInt32();
 
                             return new ChatResponse()
                             {
@@ -328,8 +327,8 @@ namespace VpetChatWithOllama
                                     { "role", doc?.RootElement.GetProperty("message").GetProperty("role").GetString() },
                                     { "content", chatResponse.ToString() }
                                 },
-                                prompt_eval_count = prompt_eval_count,
-                                eval_count = eval_count
+                                prompt_eval_count = promptEvalCount,
+                                eval_count = evalCount
                             };
                         }
                     }
