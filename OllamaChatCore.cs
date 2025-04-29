@@ -170,9 +170,9 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
         /// <returns></returns>
-        public async Task<string> Chat(string nextSentence)
+        public async Task<string> Chat(string nextSentence,bool isSystem = false)
         {
-            StringContent stringContent = new(GenerateContent(nextSentence, false), Encoding.UTF8, "application/json");
+            StringContent stringContent = new(GenerateContent(nextSentence, false,role: isSystem ? "system" : "user"), Encoding.UTF8, "application/json");
 
             JObject chatResponseJson = await GetResponse(stringContent, "api/chat");
 
@@ -187,10 +187,10 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
         /// <returns></returns>
-        public async Task<string> Chat(string nextSentence, Action<string> updateTrigger)
+        public async Task<string> Chat(string nextSentence, Action<string> updateTrigger, bool isSystem = false)
         {
             StringContent postRequests = new(
-                GenerateContent(nextSentence, true),
+                GenerateContent(nextSentence, true, isSystem ? "system" : "user"),
                 Encoding.UTF8,
                 "application/json");
 
@@ -206,10 +206,10 @@ namespace VpetChatWithOllama
         /// <param name="nextSentence">the next sentce ready to chat</param>
         /// <param name="ifStream">If use stream mode</param>
         /// <returns>the content ready to sent to the server</returns>
-        private string GenerateContent(string nextSentence, bool ifStream)
+        private string GenerateContent(string nextSentence, bool ifStream, string role = "user")
         {
             _chattingHistory.Add(new Dictionary<string, string>()
-                { { "role", "user" }, { "content", getAccuralPrompt(_promptBeforeUserInput) + nextSentence } });
+                { { "role", role }, { "content", getAccuralPrompt(_promptBeforeUserInput) + nextSentence } });
 
             List<Dictionary<string, string>> tempChat = new(SystemPrompt());
             tempChat.InsertRange(0, _chattingHistory);
