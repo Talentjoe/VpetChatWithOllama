@@ -37,6 +37,7 @@ namespace VpetChatWithOllama
         /// <param name="enhancePrompt">Use enhance prompt mode</param>
         /// <param name="customizedPrompts">Customized prompts input</param>
         /// <param name="promptBeforeUserInput">The prompt before user input</param>
+        /// <param name="replacementMapping">The words to be replaced by auto mapping </param>
         public OllamaChatCore(
             string prompt = "",
             string moduleName = "Qwen2.5:7b",
@@ -45,7 +46,8 @@ namespace VpetChatWithOllama
             bool enhancePrompt = true,
             List<Func<string>> customizedPrompts = null,
             string chatHistory = "",
-            string promptBeforeUserInput = ""
+            string promptBeforeUserInput = "",
+            Dictionary<string, Func<string>> replacementMapping = null
         )
         {
             this._moduleName = moduleName.ToLower();
@@ -56,11 +58,9 @@ namespace VpetChatWithOllama
             this._enhancePrompt = enhancePrompt;
             this._customizedPrompts = customizedPrompts;
             this._promptBeforeUserInput = promptBeforeUserInput;
+            this._replacementMapping = replacementMapping;
 
-            if (chatHistory != "")
-            {
-                _chattingHistory = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(chatHistory);
-            }
+            _chattingHistory = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(chatHistory)??new List<Dictionary<string, string>>();
 
             this.TokenCount = 0;
             this.PromptCount = 0;
