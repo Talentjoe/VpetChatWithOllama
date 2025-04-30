@@ -80,6 +80,8 @@ namespace VpetChatWithOllama
                 Header = "ChatOllamaAPI",
                 HorizontalContentAlignment = HorizontalAlignment.Center
             };
+            MenuItem modeset = MW.Main.ToolBar.MenuMODConfig;
+            modeset.Visibility = Visibility.Visible;
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
 
@@ -132,6 +134,10 @@ namespace VpetChatWithOllama
 
         public async Task ResponseToFood(Food food)
         {
+            if (mainPlugin.MW.TalkBoxCurr.APIName != "ChatOllama")
+                return;
+            
+            Task.Delay(500).Wait();
             if (food == null)
                 return;
 
@@ -144,7 +150,7 @@ namespace VpetChatWithOllama
             GenText(text);
         }
 
-        public async void GenText(string text, bool isSystem = false)
+        public async void GenText(string text, bool isSystem = false)  
         {
             try
             {
@@ -172,11 +178,6 @@ namespace VpetChatWithOllama
                     }
                     else
                     {
-                        Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
-                        Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
-
-                        var graphname = mainPlugin.MW.Core.Graph.FindName(GraphInfo.GraphType.Say);
-
                         bool showText = true;
                         bool first = true;
                         Action<string> action = message =>
@@ -190,30 +191,20 @@ namespace VpetChatWithOllama
                             {
                                 if (first)
                                 {
-                                    Dispatcher.Invoke(
-                                        () => mainPlugin.MW.Main.Display(
-                                            graphname,
-                                            GraphInfo.AnimatType.A_Start,
-                                            () => mainPlugin.MW.Main.DisplayBLoopingForce(graphname))
-                                    );
                                     first = false;
                                 }
 
-                                ollamaMessageBar.UpdateText(message);
+                                Update(message);
                             }
-
-                            else
-                                ollamaMessageBar.UpdateText("");
 
                             if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
                             {
                                 showText = true;
                             }
                         };
+                        DisplayThinkToSayRnd();
                         String res = await mainPlugin.COllama.Chat(text, action, isSystem);
-
-                        Dispatcher.Invoke(() => mainPlugin.MW.Main.DisplayDefault());
-                        Dispatcher.Invoke(() => ollamaMessageBar.FinishText());
+                        EndGenerate();
                     }
                 }
 
