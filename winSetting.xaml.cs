@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Windows;
 using System.Collections.ObjectModel;
-using System.Runtime.Versioning;
 using LinePutScript.Localization.WPF;
 using System.Text.RegularExpressions;
 

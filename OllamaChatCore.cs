@@ -3,10 +3,8 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VPet_Simulator.Windows.Interface;
 
 
 namespace VpetChatWithOllama
