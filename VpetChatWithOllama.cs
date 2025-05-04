@@ -87,6 +87,8 @@ namespace VpetChatWithOllama
             {
                 _ = Task.Run(() => COllamaAPI.ResponseToFood(food));
             };
+            MenuItem modeSet = MW.Main.ToolBar.MenuMODConfig;
+            modeSet.Visibility = Visibility.Visible;
         }
 
 
