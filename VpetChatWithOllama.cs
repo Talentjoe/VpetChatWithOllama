@@ -1,13 +1,10 @@
 ﻿using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.Windows.Threading;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -185,7 +182,7 @@ namespace VpetChatWithOllama
                         
                         Action<string> action = message =>
                                                 {
-                                                    if (message.Contains("<think>") && !mainPlugin.settings.showR1Think)
+                                                    if (!mainPlugin.settings.showR1Think&&message.Contains("<think>"))
                                                     {
                                                         showText = false;
                                                     }
