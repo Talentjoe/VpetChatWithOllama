@@ -164,14 +164,16 @@ namespace VpetChatWithOllama
                 {
                     if (!mainPlugin.settings.enableStream)
                     {
-                        Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+                        //Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+                        
                         String res = await mainPlugin.COllama.Chat(text, isSystem);
                         if (!mainPlugin.settings.showR1Think)
                         {
                             res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
                         }
+                        Main.SayInfoWithOutStream sayInfoWithOutStream = new(res);
 
-                        DisplayThinkToSayRnd(res);
+                        DisplayThinkToSayRnd(sayInfoWithOutStream);
                     }
                     else
                     {
@@ -203,7 +205,7 @@ namespace VpetChatWithOllama
                                                     }
                                                 };
                         
-                        DisplayThinkToSayRnd(sayInfoWithStream);
+                        DisplayThinkToSayRnd(sayInfoWithStream); 
                         String res = await mainPlugin.COllama.Chat(text, action, isSystem);
                         sayInfoWithStream.FinishGenerate();
                     }
