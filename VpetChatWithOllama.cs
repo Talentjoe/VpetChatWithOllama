@@ -150,7 +150,7 @@ namespace VpetChatWithOllama
             GenText(text);
         }
 
-        public async void GenText(string text, bool isSystem = false)  
+        private async void GenText(string text, bool isSystem = false)  
         {
             try
             {
@@ -180,31 +180,35 @@ namespace VpetChatWithOllama
                     {
                         bool showText = true;
                         bool first = true;
+                        
+                        Main.SayInfoWithStream sayInfoWithStream = new();
+                        
                         Action<string> action = message =>
-                        {
-                            if (message.Contains("<think>") && !mainPlugin.settings.showR1Think)
-                            {
-                                showText = false;
-                            }
-
-                            if (showText)
-                            {
-                                if (first)
-                                {
-                                    first = false;
-                                }
-
-                                Update(message);
-                            }
-
-                            if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
-                            {
-                                showText = true;
-                            }
-                        };
-                        DisplayThinkToSayRnd();
+                                                {
+                                                    if (message.Contains("<think>") && !mainPlugin.settings.showR1Think)
+                                                    {
+                                                        showText = false;
+                                                    }
+                        
+                                                    if (showText)
+                                                    {
+                                                        if (first)
+                                                        {
+                                                            first = false;
+                                                        }
+                        
+                                                        sayInfoWithStream.UpdateText(message);
+                                                    }
+                        
+                                                    if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
+                                                    {
+                                                        showText = true;
+                                                    }
+                                                };
+                        
+                        DisplayThinkToSayRnd(sayInfoWithStream);
                         String res = await mainPlugin.COllama.Chat(text, action, isSystem);
-                        EndGenerate();
+                        sayInfoWithStream.FinishGenerate();
                     }
                 }
 
