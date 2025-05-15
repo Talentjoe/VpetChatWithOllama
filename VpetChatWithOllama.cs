@@ -171,16 +171,15 @@ namespace VpetChatWithOllama
                         {
                             res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
                         }
-                        Main.SayInfoWithOutStream sayInfoWithOutStream = new(res);
 
-                        DisplayThinkToSayRnd(sayInfoWithOutStream);
+                        DisplayThinkToSayRnd(res);
                     }
                     else
                     {
                         bool showText = true;
                         bool first = true;
                         
-                        Main.SayInfoWithStream sayInfoWithStream = new();
+                        SayInfoWithStream sayInfoWithStream = new();
                         
                         Action<string> action = message =>
                                                 {
