@@ -10,12 +10,7 @@
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Compile Remove="30001_ChatWithOllama\**" />
-		<EmbeddedResource Remove="30001_ChatWithOllama\**" />
-		<None Remove="30001_ChatWithOllama\**" />
-		<Page Remove="30001_ChatWithOllama\**" />
-		
+	<ItemGroup>		
 		<Compile Remove="Test\**" />
 		<EmbeddedResource Remove="Test\**" />
 		<None Remove="Test\**" />
@@ -23,9 +18,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-
-		<PackageReference Include="VPet-Simulator.Windows.Interface" Version="1.1.0.40" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="VPet-Simulator.Windows.Interface" Version="1.1.0.50" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -42,5 +36,15 @@
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
 	</ItemGroup>
+
+	<Target Name="CopyResources" AfterTargets="Build">
+		<ItemGroup>
+			<FilesToCopy Include="$(OutDir)**\*" />
+		</ItemGroup>
+		<Copy
+				SourceFiles="@(FilesToCopy)"
+				DestinationFiles="@(FilesToCopy->'$(ProjectDir)30001_ChatWithOllama\plugin\%(RecursiveDir)%(Filename)%(Extension)')"
+				SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

@@ -1,13 +1,10 @@
 ﻿using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.Windows.Threading;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -73,20 +70,25 @@ namespace VpetChatWithOllama
             if (settings == null)
                 settings = new PluginInformations.PluginSettings();
 
-
-            MW.TalkAPI.Add(new ChatWithOllamaAPI(this));
-            var menuItem = new MenuItem()
+            COllamaAPI = new ChatWithOllamaAPI(this);
+            MW.TalkAPI.Add(COllamaAPI);
+            var menuItem = new MenuItem
             {
                 Header = "ChatOllamaAPI",
                 HorizontalContentAlignment = HorizontalAlignment.Center
             };
+            MenuItem modeset = MW.Main.ToolBar.MenuMODConfig;
+            modeset.Visibility = Visibility.Visible;
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
+
+            //MW.Event_TakeItem += async (Food food) => { _ = Task.Run(() => COllamaAPI.ResponseToFood(food)); };
+            // add in next update
         }
 
 
         /// <summary>
-        /// save logic, used when exit, persiste the settings
+        /// save logic, used when exited, persist the settings
         /// </summary>
         public override void Save()
         {
@@ -115,92 +117,105 @@ namespace VpetChatWithOllama
 
     public class ChatWithOllamaAPI : TalkBox
     {
-        private OllamaMessageBar ollamaMessageBar;
         private ChatWithOllama mainPlugin;
         public override string APIName => "ChatOllama";
 
         public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
-            ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
+        }
+
+        public async Task ResponseToFood(Food food)
+        {
+            if (mainPlugin.MW.TalkBoxCurr.APIName != "ChatOllama")
+                return;
+
+            Task.Delay(500).Wait();
+            if (food == null)
+                return;
+
+            string text = "用户给你吃了 " + food.Name + " " + food.Description;
+            GenText(text, true);
         }
 
         public override async void Responded(string text)
         {
-            Dispatcher.Invoke(() => this.IsEnabled = false);
-            DisplayThink();
+            GenText(text);
+        }
 
-            if (mainPlugin.COllama == null)
-            {
-                DisplayThinkToSayRnd("请先前往设置中设置 ChatWithOllama API".Translate());
-                return;
-            }
-
+        private async void GenText(string text, bool isSystem = false)
+        {
             try
             {
-                if (!mainPlugin.settings.enableStream)
+                Dispatcher.Invoke(() => this.IsEnabled = false);
+                DisplayThink();
+
+                if (mainPlugin.COllama == null)
                 {
-                    Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
-                    String res = await mainPlugin.COllama.Chat(text);
-                    if (!mainPlugin.settings.showR1Think)
+                    DisplayThinkToSayRnd("请先前往设置中设置 ChatWithOllama API".Translate());
+                    return;
+                }
+
+                try
+                {
+                    if (!mainPlugin.settings.enableStream)
                     {
-                        res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
+                        //Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+
+                        String res = await mainPlugin.COllama.Chat(text, isSystem);
+                        if (!mainPlugin.settings.showR1Think)
+                        {
+                            res = Regex.Replace(res, @"<think>.*?</think>", String.Empty, RegexOptions.Singleline);
+                        }
+
+                        DisplayThinkToSayRnd(res);
                     }
-
-                    DisplayThinkToSayRnd(res);
-                }
-                else
-                {
-                    Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
-                    Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
-                    
-                    var graphname = mainPlugin.MW.Core.Graph.FindName(GraphInfo.GraphType.Say);
-
-                    bool showText = true;
-                    bool first = true;
-                    Action<string> action = message =>
+                    else
                     {
-                        if (message.Contains("<think>") && !mainPlugin.settings.showR1Think)
-                        {
-                            showText = false;
-                        }
+                        bool showText = true;
+                        bool first = true;
 
-                        if (showText)
+                        SayInfoWithStream sayInfoWithStream = new();
+
+                        Action<string> action = message =>
                         {
-                            if (first)
+                            if (!mainPlugin.settings.showR1Think && message.Contains("<think>"))
                             {
-                                Dispatcher.Invoke(
-                                    () => mainPlugin.MW.Main.Display(
-                                        graphname,
-                                        GraphInfo.AnimatType.A_Start,
-                                        () => mainPlugin.MW.Main.DisplayBLoopingForce(graphname))
-                                );
-                                first = false;
+                                showText = false;
                             }
-                            ollamaMessageBar.UpdateText(message);
-                        }
 
-                        else
-                            ollamaMessageBar.UpdateText("");
+                            if (showText)
+                            {
+                                if (first)
+                                {
+                                    first = false;
+                                    DisplayThinkToSayRnd(sayInfoWithStream);
+                                }
+                                sayInfoWithStream.UpdateText(message);
+                            }
 
-                        if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
-                        {
-                            showText = true;
-                        }
-                    };
-                    String res = await mainPlugin.COllama.ChatWithStream(text, action);
+                            if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
+                            {
+                                showText = true;
+                            }
+                        };
 
-                    Dispatcher.Invoke(() => mainPlugin.MW.Main.DisplayDefault());
-                    Dispatcher.Invoke(() => ollamaMessageBar.FinishText());
+                        await mainPlugin.COllama.Chat(text, action, isSystem);
+                        sayInfoWithStream.FinishGenerate();
+                    }
                 }
-            }
 
-            catch (Exception ex)
+                catch (Exception ex)
+                {
+                    DisplayThinkToSayRnd("ChatOllama API 出现错误: " + ex.Message);
+                }
+
+                Dispatcher.Invoke(() => this.IsEnabled = true);
+            }
+            catch (Exception e)
             {
-                DisplayThinkToSayRnd("ChatOllama API 出现错误: " + ex.Message);
+                throw e;
             }
-
-            Dispatcher.Invoke(() => this.IsEnabled = true);
         }
 
         public override void Setting() => mainPlugin.Setting();

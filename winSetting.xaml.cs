@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Runtime.Versioning;
 using LinePutScript.Localization.WPF;
 using System.Text.RegularExpressions;
 
@@ -96,10 +97,16 @@ namespace VpetChatWithOllama
                 promptBeforeUserInput = tbUserPromptTemplate.Text,
                 tokenCount = long.TryParse(tbTokenCount.Text, out long tokenCount) ? tokenCount : 0,
             };
-            
-           
-            MessageBox.Show("设置保存成功");
-            this.Close();
+
+            if (plugin.MW.TalkBoxCurr.APIName == "ChatOllama" )
+            {
+                MessageBox.Show("设置保存成功".Translate());
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("当前聊天API非 ChatWithOllama 请前往设置".Translate());
+            }
         }
 
         /// <summary>

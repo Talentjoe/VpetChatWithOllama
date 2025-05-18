@@ -15,7 +15,7 @@ public class Program
         a += msg=>Console.Write(msg);
         while(true)
         {
-            String b = await chat.ChatWithStream(Console.ReadLine(), a);
+            String b = await chat.Chat(Console.ReadLine(), a);
             Console.WriteLine();
         }
     }
