@@ -19,6 +19,7 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="VPet-Simulator.Windows.Interface" Version="1.1.0.50" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -46,11 +47,6 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <ProjectReference Include="..\VPet - 副本\VPet-Simulator.Windows.Interface\VPet-Simulator.Windows.Interface.csproj" />
-	  <ProjectReference Include="..\VPet - 副本\VPet-Simulator.Windows\VPet-Simulator.Windows.csproj" />
 	</ItemGroup>
 
 	<Target Name="CopyResources" AfterTargets="Build">

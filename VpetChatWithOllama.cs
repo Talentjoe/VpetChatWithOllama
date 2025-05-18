@@ -72,7 +72,7 @@ namespace VpetChatWithOllama
 
             COllamaAPI = new ChatWithOllamaAPI(this);
             MW.TalkAPI.Add(COllamaAPI);
-            var menuItem = new MenuItem()
+            var menuItem = new MenuItem
             {
                 Header = "ChatOllamaAPI",
                 HorizontalContentAlignment = HorizontalAlignment.Center
@@ -82,10 +82,8 @@ namespace VpetChatWithOllama
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
 
-            MW.Event_TakeItem += async (Food food)=>
-            {
-                _ = Task.Run(() => COllamaAPI.ResponseToFood(food));
-            };
+            //MW.Event_TakeItem += async (Food food) => { _ = Task.Run(() => COllamaAPI.ResponseToFood(food)); };
+            // add in next update
         }
 
 
@@ -119,13 +117,11 @@ namespace VpetChatWithOllama
 
     public class ChatWithOllamaAPI : TalkBox
     {
-        private OllamaMessageBar ollamaMessageBar;
         private ChatWithOllama mainPlugin;
         public override string APIName => "ChatOllama";
 
         public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
-            ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
         }
 
@@ -133,7 +129,7 @@ namespace VpetChatWithOllama
         {
             if (mainPlugin.MW.TalkBoxCurr.APIName != "ChatOllama")
                 return;
-            
+
             Task.Delay(500).Wait();
             if (food == null)
                 return;
@@ -147,7 +143,7 @@ namespace VpetChatWithOllama
             GenText(text);
         }
 
-        private async void GenText(string text, bool isSystem = false)  
+        private async void GenText(string text, bool isSystem = false)
         {
             try
             {
@@ -165,7 +161,7 @@ namespace VpetChatWithOllama
                     if (!mainPlugin.settings.enableStream)
                     {
                         //Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
-                        
+
                         String res = await mainPlugin.COllama.Chat(text, isSystem);
                         if (!mainPlugin.settings.showR1Think)
                         {
@@ -178,34 +174,33 @@ namespace VpetChatWithOllama
                     {
                         bool showText = true;
                         bool first = true;
-                        
+
                         SayInfoWithStream sayInfoWithStream = new();
-                        
+
                         Action<string> action = message =>
-                                                {
-                                                    if (!mainPlugin.settings.showR1Think&&message.Contains("<think>"))
-                                                    {
-                                                        showText = false;
-                                                    }
-                        
-                                                    if (showText)
-                                                    {
-                                                        if (first)
-                                                        {
-                                                            first = false;
-                                                        }
-                        
-                                                        sayInfoWithStream.UpdateText(message);
-                                                    }
-                        
-                                                    if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
-                                                    {
-                                                        showText = true;
-                                                    }
-                                                };
-                        
-                        DisplayThinkToSayRnd(sayInfoWithStream); 
-                        String res = await mainPlugin.COllama.Chat(text, action, isSystem);
+                        {
+                            if (!mainPlugin.settings.showR1Think && message.Contains("<think>"))
+                            {
+                                showText = false;
+                            }
+
+                            if (showText)
+                            {
+                                if (first)
+                                {
+                                    first = false;
+                                    DisplayThinkToSayRnd(sayInfoWithStream);
+                                }
+                                sayInfoWithStream.UpdateText(message);
+                            }
+
+                            if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
+                            {
+                                showText = true;
+                            }
+                        };
+
+                        await mainPlugin.COllama.Chat(text, action, isSystem);
                         sayInfoWithStream.FinishGenerate();
                     }
                 }
