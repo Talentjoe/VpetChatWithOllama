@@ -47,3 +47,5 @@ When inputting the key work you do not need to include double quotation but do n
 You may check your input prompt by clicking at the "Test Prompt" button below the prompt. It shows what system prompt the module will get.
 
 当前版本与steam版本区别：互动时会增加主动对话 考虑是否加入自定义主动对话提示词
+
+Next Version: fix English setting interface
