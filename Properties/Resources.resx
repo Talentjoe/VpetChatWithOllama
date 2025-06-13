@@ -153,4 +153,22 @@
   <data name="TokenCount" xml:space="preserve">
     <value>Token Count</value>
   </data>
+  <data name="APISettings" xml:space="preserve">
+    <value>API Settings</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>Advanced Settings</value>
+  </data>
+  <data name="ModuleStatus" xml:space="preserve">
+    <value>Module Status</value>
+  </data>
+  <data name="ProactiveConversations" xml:space="preserve">
+    <value>Proactive Conversations</value>
+  </data>
+  <data name="ProactiveConversationsPrompt" xml:space="preserve">
+    <value>Proactive Conversations Prompt</value>
+  </data>
 </root>

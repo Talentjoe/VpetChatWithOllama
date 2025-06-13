@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Runtime.Versioning;
 using LinePutScript.Localization.WPF;
 using System.Text.RegularExpressions;
 
@@ -25,6 +26,7 @@ namespace VpetChatWithOllama
             cbModel.Text = plugin.settings.moduleName;
             ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
             tbUserPromptTemplate.Text = plugin.settings.promptBeforeUserInput;
+            ckProactiveConversations.IsChecked = plugin.settings.proactiveTalking;
             tbTokenCount.Text = plugin.COllama.TokenCount.ToString();
             try
             {
@@ -95,6 +97,7 @@ namespace VpetChatWithOllama
                 showR1Think = ckShowR1Think.IsChecked ?? false,
                 promptBeforeUserInput = tbUserPromptTemplate.Text,
                 tokenCount = long.TryParse(tbTokenCount.Text, out long tokenCount) ? tokenCount : 0,
+                proactiveTalking = ckProactiveConversations.IsChecked ?? false
             };
 
             if (plugin.MW.TalkBoxCurr.APIName == "ChatOllama" )

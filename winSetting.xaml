@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VpetChatWithOllama" mc:Ignorable="d"
         xmlns:ll="clr-namespace:LinePutScript.Localization.WPF;assembly=LinePutScript.Localization.WPF"
-        xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI" 
-        xmlns:res ="clr-namespace:VpetChatWithOllama.Properties"
+        xmlns:pu="clr-namespace:Panuon.WPF.UI;assembly=Panuon.WPF.UI"
+        xmlns:res="clr-namespace:VpetChatWithOllama.Properties"
         Title="{ll:Str 'Chat Ollama Plugin Settings'}" Width="450" FontSize="16" Height="Auto"
         ResizeMode="NoResize" WindowState="Normal" SizeToContent="Height">
 
@@ -14,72 +14,187 @@
     <Window.Resources>
         <ResourceDictionary Source="/VPet-Simulator.Windows.Interface;component/ResourceStyle.xaml" />
     </Window.Resources>
-
     <Grid Margin="16">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="15" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
-            <RowDefinition Height="210"/>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
+        <TabControl >
+        <!-- API Settings Tab -->
+        <TabItem Header="{x:Static res:Resources.APISettings}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="120" />
+                    <RowDefinition Height="120" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
 
-        <TextBlock VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.APIURL}"/></TextBlock>
-        <TextBlock Grid.Row="1" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ModelName}"/></TextBlock>
-        <TextBlock Grid.Row="2" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.Prompt}"/></TextBlock>
-        <TextBlock Grid.Row="4" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.AdvancedPrompt}"/></TextBlock>
-        <TextBlock Grid.Row="5" VerticalAlignment="Center" Grid.Column="2" Margin="47,0,77,0" ><Run Text="{x:Static res:Resources.UseStream}"/></TextBlock>
-        <TextBlock Grid.Row="5" VerticalAlignment="Center" ><Run Text="{x:Static res:Resources.ShowThinkingProcess}"/></TextBlock>
-        <TextBlock Grid.Row="6" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.ChatHistory}"/></TextBlock>
+                <TextBlock VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.APIURL}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.ModelName}" />
+                </TextBlock>
+                <TextBlock Grid.Row="2" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.Prompt}" />
+                </TextBlock>
+                <TextBlock Grid.Row="3" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.UserPrompt}" />
+                </TextBlock>
 
-        <TextBlock Grid.Row="7" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,0,15,10" ><Run Text="{x:Static res:Resources.TokenCount}"/></TextBlock>
-        <TextBox x:Name="tbTokenCount" Grid.Row="7" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
-                 FontSize="16" Text="0" TextWrapping="WrapWithOverflow"
-                 ToolTip="Previous chat logs (read-only)."  VerticalScrollBarVisibility="Visible" 
-                 AcceptsReturn="True"   IsReadOnly="True" HorizontalAlignment="Center" Width="230"  />
-        <Button x:Name="btnTest" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.TestPrompts}" Margin="125,4,10,4"
-            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="4" Click="btnTest_Click"
-          />
+                <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
+                         FontSize="16" Text="http://localhost:11434/"
+                         ToolTip="API URL to access models." Margin="0,5,0,5" LostFocus="LostFocus" />
+                <ComboBox x:Name="cbModel" Style="{DynamicResource StandardComboBoxStyle}" Grid.Row="1" Grid.Column="2"
+                          IsEditable="True" Margin="0,5,0,5" ToolTip="Select or add a model name dynamically." />
+                <TextBox x:Name="tbPromptTemplate" Grid.Row="2" Grid.Column="2"
+                         Style="{DynamicResource StandardTextBoxStyle}"
+                         FontSize="16" pu:TextBoxHelper.Watermark="Enter default prompt. "
+                         ToolTip="Template for initializing prompts." AcceptsReturn="True"
+                         TextWrapping="WrapWithOverflow"
+                         Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
+                <TextBox x:Name="tbUserPromptTemplate" Grid.Row="3" Grid.Column="2"
+                         Style="{DynamicResource StandardTextBoxStyle}"
+                         FontSize="16" pu:TextBoxHelper.Watermark="Enter user default prompt. "
+                         ToolTip="Template for initializing user prompts." AcceptsReturn="True"
+                         TextWrapping="WrapWithOverflow"
+                         Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
+                
+                <Grid Grid.Row="4" Grid.Column = "2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="btnClear" pu:ButtonHelper.CornerRadius="4"
+                            Content="{x:Static res:Resources.ClearMemory}" Margin="4,4,4,4"
+                            Grid.Column="0" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="1"
+                            
+                            VerticalAlignment="Stretch"
+                            Click="btnClear_Click" />
+                    <Button x:Name="btnTest" Grid.Row = "0" Grid.Column="1" pu:ButtonHelper.CornerRadius="4" 
+                        Content="{x:Static res:Resources.TestPrompts}" Margin="4,4,4,4" 
+                        VerticalAlignment="Stretch"
+                         Background="{DynamicResource SecondaryLight}" Padding="1" 
+                        Click="btnTest_Click" />
+                    
+                </Grid>
+            </Grid>
+        </TabItem>
 
-        <TextBox x:Name="tbAPIURL" Grid.Row="0" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
-                 FontSize="16" Text="http://localhost:11434/" 
-                 ToolTip="API URL to access models." Margin="0,5,0,5" LostFocus="LostFocus" />
+        <!-- Advanced Settings Tab -->
+        <TabItem Header="{x:Static res:Resources.AdvancedSettings}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <ComboBox x:Name="cbModel" Style="{DynamicResource StandardComboBoxStyle}" Grid.Row="1" Grid.Column="2"
-                  IsEditable="True" Margin="0,5,0,5" ToolTip="Select or add a model name dynamically." />
-        <TextBox x:Name="tbPromptTemplate" Grid.Row="2" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
-                 FontSize="16" pu:TextBoxHelper.Watermark="Enter default prompt. "
-                 ToolTip="Template for initializing prompts. " AcceptsReturn="True" TextWrapping="WrapWithOverflow"
-                 Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
+                <TextBlock Grid.Row="0" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.AdvancedPrompt}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.UseStream}" />
+                </TextBlock>
+                <TextBlock Grid.Row="2" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.ShowThinkingProcess}" />
+                </TextBlock>
+                <TextBlock Grid.Row="3" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.ProactiveConversations}" />
+                </TextBlock>
 
-        <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="4" Grid.Column="2" Content="" Margin="0,0,156,0" />
-        <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" Margin="209,0,0,0" />
-        <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="5" Grid.Column="2" Content="" Margin="0,0,239,0" />
+                <CheckBox x:Name="ckEnhancePrompt" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="0"
+                          Grid.Column="2" Content="" Margin="0,0,156,0" />
+                <CheckBox x:Name="ckEnableStream" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="1"
+                          Grid.Column="2" Content="" Margin="0,0,0,0" />
+                <CheckBox x:Name="ckShowR1Think" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="2"
+                          Grid.Column="2" Content="" Margin="0,0,0,0" />
+                <CheckBox x:Name="ckProactiveConversations" Style="{DynamicResource ThemedCheckBoxStyle}" Grid.Row="3"
+                          Grid.Column="2" Content="" Margin="0,0,0,0" />
+                <Grid Grid.Row="4" Grid.ColumnSpan="3" Visibility="Collapsed" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="15" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="180"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" VerticalAlignment="Center" TextWrapping="Wrap">
+                        <Run Text="{x:Static res:Resources.ProactiveConversationsPrompt}" />
+                    </TextBlock>
+                    <TextBox x:Name="tbProactiveCpnversationPrompt" Grid.Row="0" Grid.Column="2"
+                             Style="{DynamicResource StandardTextBoxStyle}"
+                             FontSize="16" pu:TextBoxHelper.Watermark="Enter default prompt. "
+                             ToolTip="Template for initializing user prompts." AcceptsReturn="True"
+                             TextWrapping="WrapWithOverflow"
+                             Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
+                </Grid>
+            </Grid>
+        </TabItem>
+        
+        <!-- Module Status Tap -->
+        <TabItem Header="{x:Static res:Resources.ModuleStatus}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="210" />
+                    <RowDefinition Height="40" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.ChatHistory}" />
+                </TextBlock>
+                <TextBlock Grid.Row="1" VerticalAlignment="Center">
+                    <Run Text="{x:Static res:Resources.TokenCount}" />
+                </TextBlock>
+                
+                <TextBox x:Name="tbChatHistory" Grid.Row="0" Grid.Column="2"
+                         Style="{DynamicResource StandardTextBoxStyle}"
+                         FontSize="16" Text="[]" TextWrapping="WrapWithOverflow"
+                         ToolTip="Previous chat logs (read-only)." VerticalScrollBarVisibility="Visible"
+                         AcceptsReturn="True" IsReadOnly="True"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            Height="Auto" MaxHeight="200"
+                         Margin="4,4,4,4" />
+                <TextBox x:Name="tbTokenCount" Grid.Row="1" Grid.Column="2"
+                         Style="{DynamicResource StandardTextBoxStyle}"
+                         FontSize="16" Text="0" TextWrapping="WrapWithOverflow"
+                         ToolTip="Token count (read-only)." VerticalScrollBarVisibility="Visible"
+                         AcceptsReturn="True" IsReadOnly="True" 
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         Margin="4,4,4,4" />
+            </Grid>
+        </TabItem>
 
-        <TextBox x:Name="tbChatHistory" Grid.Row="6" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
-                 FontSize="16" Text="[]" TextWrapping="WrapWithOverflow"
-                 ToolTip="Previous chat logs (read-only)." Height="200" VerticalScrollBarVisibility="Visible" 
-                 AcceptsReturn="True"   IsReadOnly="True" HorizontalAlignment="Center" Width="230"  />
-
-        <Button x:Name="btnClear" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.ClearMemory}" Margin="4,4,4,4"
-         Grid.Column="0" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11" Click="btnClear_Click"
-          />
-        <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4" Content="{x:Static res:Resources.SaveSettings}" Margin="4,4,4,4"
-                Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="11"
-                Click="btnSave_Click" />
-        <TextBlock Grid.Row="3" VerticalAlignment="Center" Grid.ColumnSpan="2" ><Run Text="{x:Static res:Resources.UserPrompt}"/></TextBlock>
-        <TextBox x:Name="tbUserPromptTemplate" Grid.Row="3" Grid.Column="2" Style="{DynamicResource StandardTextBoxStyle}"
-            FontSize="16" pu:TextBoxHelper.Watermark="Enter user default prompt. "
-            ToolTip="Template for initializing user prompts." AcceptsReturn="True" TextWrapping="WrapWithOverflow"
-            Height="Auto" MaxHeight="100" VerticalScrollBarVisibility="Visible" Margin="0,5,0,5" />
+    </TabControl>
+    <Button x:Name="btnSave" pu:ButtonHelper.CornerRadius="4"
+            Content="{x:Static res:Resources.SaveSettings}" Margin="4,4,4,4"
+            Grid.Column="2" Background="{DynamicResource SecondaryLight}" Padding="1" Grid.Row="1"
+            Click="btnSave_Click" />
+        
     </Grid>
 </Window>

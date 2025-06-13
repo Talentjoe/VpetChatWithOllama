@@ -153,4 +153,22 @@
   <data name="TokenCount" xml:space="preserve">
     <value>Token使用量</value>
   </data>
+  <data name="APISettings" xml:space="preserve">
+    <value>接口设置</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>动作</value>
+  </data>
+  <data name="AdvancedSettings" xml:space="preserve">
+    <value>高级设置</value>
+  </data>
+  <data name="ModuleStatus" xml:space="preserve">
+    <value>模型状态</value>
+  </data>
+  <data name="ProactiveConversations" xml:space="preserve">
+    <value>主动对话</value>
+  </data>
+  <data name="ProactiveConversationsPrompt" xml:space="preserve">
+    <value>主动对话提示词</value>
+  </data>
 </root>

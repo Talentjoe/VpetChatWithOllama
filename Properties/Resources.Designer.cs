@@ -60,11 +60,38 @@ namespace VpetChatWithOllama.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        public static string Actions {
+            get {
+                return ResourceManager.GetString("Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced Prompt.
         /// </summary>
         public static string AdvancedPrompt {
             get {
                 return ResourceManager.GetString("AdvancedPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advanced Settings.
+        /// </summary>
+        public static string AdvancedSettings {
+            get {
+                return ResourceManager.GetString("AdvancedSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API Settings.
+        /// </summary>
+        public static string APISettings {
+            get {
+                return ResourceManager.GetString("APISettings", resourceCulture);
             }
         }
         
@@ -101,6 +128,33 @@ namespace VpetChatWithOllama.Properties {
         public static string ModelName {
             get {
                 return ResourceManager.GetString("ModelName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Module Status.
+        /// </summary>
+        public static string ModuleStatus {
+            get {
+                return ResourceManager.GetString("ModuleStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Proactive Conversations.
+        /// </summary>
+        public static string ProactiveConversations {
+            get {
+                return ResourceManager.GetString("ProactiveConversations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Proactive Conversations Prompt.
+        /// </summary>
+        public static string ProactiveConversationsPrompt {
+            get {
+                return ResourceManager.GetString("ProactiveConversationsPrompt", resourceCulture);
             }
         }
         

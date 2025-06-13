@@ -1,13 +1,10 @@
 ﻿using LinePutScript.Localization.WPF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.Windows.Threading;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -75,20 +72,18 @@ namespace VpetChatWithOllama
 
             COllamaAPI = new ChatWithOllamaAPI(this);
             MW.TalkAPI.Add(COllamaAPI);
-            var menuItem = new MenuItem()
+            var menuItem = new MenuItem
             {
                 Header = "ChatOllamaAPI",
                 HorizontalContentAlignment = HorizontalAlignment.Center
             };
+            MenuItem modeset = MW.Main.ToolBar.MenuMODConfig;
+            modeset.Visibility = Visibility.Visible;
             menuItem.Click += (s, e) => { Setting(); };
             MW.Main.ToolBar.MenuMODConfig.Items.Add(menuItem);
 
-            MW.Event_TakeItem += async (Food food)=>
-            {
-                _ = Task.Run(() => COllamaAPI.ResponseToFood(food));
-            };
-            MenuItem modeSet = MW.Main.ToolBar.MenuMODConfig;
-            modeSet.Visibility = Visibility.Visible;
+            if(settings.proactiveTalking)
+                MW.Event_TakeItem +=  COllamaAPI.ResponseToFood;
         }
 
 
@@ -122,22 +117,26 @@ namespace VpetChatWithOllama
 
     public class ChatWithOllamaAPI : TalkBox
     {
-        private OllamaMessageBar ollamaMessageBar;
         private ChatWithOllama mainPlugin;
         public override string APIName => "ChatOllama";
 
         public ChatWithOllamaAPI(ChatWithOllama mainPlugin) : base(mainPlugin)
         {
-            ollamaMessageBar = new(mainPlugin);
             this.mainPlugin = mainPlugin;
         }
 
-        public async Task ResponseToFood(Food food)
+        public void ResponseToFood(Food food)
         {
+            if (mainPlugin.MW.TalkBoxCurr.APIName != "ChatOllama")
+                return;
+            if (!mainPlugin.settings.proactiveTalking)
+                return;
+
+            Task.Delay(500).Wait();
             if (food == null)
                 return;
 
-            string text = "用户给你吃了 " + food.Name + " " + food.Description;
+            string text = "You have ate " + food.Name + " " + food.Description + " \n please response to it";
             GenText(text, true);
         }
 
@@ -146,7 +145,7 @@ namespace VpetChatWithOllama
             GenText(text);
         }
 
-        public async void GenText(string text, bool isSystem = false)
+        private async void GenText(string text, bool isSystem = false)
         {
             try
             {
@@ -163,7 +162,8 @@ namespace VpetChatWithOllama
                 {
                     if (!mainPlugin.settings.enableStream)
                     {
-                        Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+                        //Dispatcher.Invoke(() => ollamaMessageBar.ForceClose());
+
                         String res = await mainPlugin.COllama.Chat(text, isSystem);
                         if (!mainPlugin.settings.showR1Think)
                         {
@@ -174,16 +174,14 @@ namespace VpetChatWithOllama
                     }
                     else
                     {
-                        Dispatcher.Invoke(() => mainPlugin.MW.Main.MsgBar.ForceClose());
-                        Dispatcher.Invoke(() => ollamaMessageBar.Show(mainPlugin.MW.Main.Core.Save.Name));
-
-                        var graphname = mainPlugin.MW.Core.Graph.FindName(GraphInfo.GraphType.Say);
-
                         bool showText = true;
                         bool first = true;
+
+                        SayInfoWithStream sayInfoWithStream = new();
+
                         Action<string> action = message =>
                         {
-                            if (message.Contains("<think>") && !mainPlugin.settings.showR1Think)
+                            if (!mainPlugin.settings.showR1Think && message.Contains("<think>"))
                             {
                                 showText = false;
                             }
@@ -192,30 +190,20 @@ namespace VpetChatWithOllama
                             {
                                 if (first)
                                 {
-                                    Dispatcher.Invoke(
-                                        () => mainPlugin.MW.Main.Display(
-                                            graphname,
-                                            GraphInfo.AnimatType.A_Start,
-                                            () => mainPlugin.MW.Main.DisplayBLoopingForce(graphname))
-                                    );
                                     first = false;
+                                    DisplayThinkToSayRnd(sayInfoWithStream);
                                 }
-
-                                ollamaMessageBar.UpdateText(message);
+                                sayInfoWithStream.UpdateText(message);
                             }
-
-                            else
-                                ollamaMessageBar.UpdateText("");
 
                             if (message.Contains("</think>") && !mainPlugin.settings.showR1Think)
                             {
                                 showText = true;
                             }
                         };
-                        String res = await mainPlugin.COllama.Chat(text, action, isSystem);
 
-                        Dispatcher.Invoke(() => mainPlugin.MW.Main.DisplayDefault());
-                        Dispatcher.Invoke(() => ollamaMessageBar.FinishText());
+                        await mainPlugin.COllama.Chat(text, action, isSystem);
+                        sayInfoWithStream.FinishGenerate();
                     }
                 }
 
@@ -249,6 +237,7 @@ namespace VpetChatWithOllama
             public bool showR1Think;
             public string promptBeforeUserInput;
             public long tokenCount;
+            public bool proactiveTalking;
 
             public PluginSettings()
             {
@@ -262,6 +251,7 @@ namespace VpetChatWithOllama
                 this.showR1Think = true;
                 this.promptBeforeUserInput = "";
                 this.tokenCount = 0;
+                this.proactiveTalking = false;
             }
         }
 
