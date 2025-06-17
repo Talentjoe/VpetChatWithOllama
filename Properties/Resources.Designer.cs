@@ -159,11 +159,29 @@ namespace VpetChatWithOllama.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Proactive Talking Rate.
+        /// </summary>
+        public static string ProactiveTalkingRate {
+            get {
+                return ResourceManager.GetString("ProactiveTalkingRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prompt.
         /// </summary>
         public static string Prompt {
             get {
                 return ResourceManager.GetString("Prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prompt Count.
+        /// </summary>
+        public static string PromptCount {
+            get {
+                return ResourceManager.GetString("PromptCount", resourceCulture);
             }
         }
         
@@ -182,6 +200,15 @@ namespace VpetChatWithOllama.Properties {
         public static string ShowThinkingProcess {
             get {
                 return ResourceManager.GetString("ShowThinkingProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support Media Bar.
+        /// </summary>
+        public static string SupportMediaBar {
+            get {
+                return ResourceManager.GetString("SupportMediaBar", resourceCulture);
             }
         }
         

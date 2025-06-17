@@ -9,7 +9,8 @@
       "VpetChatWithOllama/1.0.0": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
-          "VPet-Simulator.Windows.Interface": "1.1.0.50"
+          "VPet-Simulator.Windows.Interface": "1.1.0.50",
+          "VpetMediaBar": "1.0.0"
         },
         "runtime": {
           "VpetChatWithOllama.dll": {}
@@ -130,6 +131,26 @@
             "fileVersion": "1.0.0.0"
           }
         }
+      },
+      "MediaClient/1.0.0": {
+        "runtime": {
+          "MediaClient.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "VpetMediaBar/1.0.0": {
+        "dependencies": {
+          "MediaClient": "1.0.0",
+          "VPet-Simulator.Windows.Interface": "1.1.0.50"
+        },
+        "runtime": {
+          "VpetMediaBar.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
       }
     }
   },
@@ -208,6 +229,16 @@
       "sha512": "sha512-aDypIA1EYM/MJMaY7TOIEAc6bgEVjyHwz4+dqz/pKAtoyMAuUpGB2lf4i27iJc6pAegcljBA+NTSIOBeswcY+Q==",
       "path": "vpet-simulator.windows.interface/1.1.0.50",
       "hashPath": "vpet-simulator.windows.interface.1.1.0.50.nupkg.sha512"
+    },
+    "MediaClient/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VpetMediaBar/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

@@ -20,14 +20,18 @@ namespace VpetChatWithOllama
             this.plugin = plugin;
             InitializeComponent();
 
-            tbAPIURL.Text = plugin.settings.url == "" ? "http://localhost:11434/" : plugin.settings.url;
-            tbPromptTemplate.Text = plugin.settings.prompt;
-            ckEnableStream.IsChecked = plugin.settings.enableStream;
-            cbModel.Text = plugin.settings.moduleName;
-            ckEnhancePrompt.IsChecked = plugin.settings.enhancePrompt;
-            tbUserPromptTemplate.Text = plugin.settings.promptBeforeUserInput;
-            ckProactiveConversations.IsChecked = plugin.settings.proactiveTalking;
+            tbAPIURL.Text = plugin.settings.Url == "" ? "http://localhost:11434/" : plugin.settings.Url;
+            tbPromptTemplate.Text = plugin.settings.Prompt;
+            ckEnableStream.IsChecked = plugin.settings.EnableStream;
+            cbModel.Text = plugin.settings.ModuleName;
+            ckEnhancePrompt.IsChecked = plugin.settings.EnhancePrompt;
+            tbUserPromptTemplate.Text = plugin.settings.PromptBeforeUserInput;
+            ckProactiveConversations.IsChecked = plugin.settings.ProactiveTalking;
             tbTokenCount.Text = plugin.COllama.TokenCount.ToString();
+            tbPromptCount.Text = plugin.COllama.PromptCount.ToString();
+            ckSupportMediaBar.IsEnabled = plugin.settings.CanSupportMediaBar;
+            ckSupportMediaBar.IsChecked = plugin.settings.SupportMediaBar && plugin.settings.CanSupportMediaBar;
+            ntbProactiveTalkingRate.Value = plugin.settings.ProactiveTalkingRate;
             try
             {
                 tbChatHistory.Text = plugin.COllama.saveHistory();
@@ -36,7 +40,7 @@ namespace VpetChatWithOllama
             {
                 tbChatHistory.Text = "[]";
             }
-            ckShowR1Think.IsChecked = plugin.settings.showR1Think;
+            ckShowR1Think.IsChecked = plugin.settings.ShowR1Think;
 
             this.Loaded += WinSetting_Loaded;
         }
@@ -64,7 +68,7 @@ namespace VpetChatWithOllama
         {
             try
             {
-                List<string> modules = await OllamaChatCore.getAllModules(tbAPIURL.Text);
+                List<string> modules = await OllamaChatCore.GetAllModules(tbAPIURL.Text);
                 cbModel.ItemsSource = new ObservableCollection<string>(modules);
             }
             catch (Exception ex)
@@ -88,16 +92,20 @@ namespace VpetChatWithOllama
             }
             plugin.settings = new PluginInformations.PluginSettings
             {
-                enhancePrompt = ckEnhancePrompt.IsChecked ?? false,
-                url = tbAPIURL.Text,
-                moduleName = cbModel.Text?.ToString(),
-                prompt = tbPromptTemplate.Text,
-                chatHistory = tbChatHistory.Text,
-                enableStream = ckEnableStream.IsChecked ?? false,
-                showR1Think = ckShowR1Think.IsChecked ?? false,
-                promptBeforeUserInput = tbUserPromptTemplate.Text,
-                tokenCount = long.TryParse(tbTokenCount.Text, out long tokenCount) ? tokenCount : 0,
-                proactiveTalking = ckProactiveConversations.IsChecked ?? false
+                EnhancePrompt = ckEnhancePrompt.IsChecked ?? false,
+                Url = tbAPIURL.Text,
+                ModuleName = cbModel.Text?.ToString(),
+                Prompt = tbPromptTemplate.Text,
+                ChatHistory = tbChatHistory.Text,
+                EnableStream = ckEnableStream.IsChecked ?? false,
+                ShowR1Think = ckShowR1Think.IsChecked ?? false,
+                PromptBeforeUserInput = tbUserPromptTemplate.Text,
+                TokenCount = long.TryParse(tbTokenCount.Text, out long tokenCount) ? tokenCount : 0,
+                PromptCount = long.TryParse(tbPromptCount.Text, out long promptCount) ? promptCount : 0,
+                ProactiveTalking = ckProactiveConversations.IsChecked ?? false,
+                SupportMediaBar = (ckSupportMediaBar.IsChecked ?? false) && plugin.settings.CanSupportMediaBar,
+                CanSupportMediaBar = plugin.settings.CanSupportMediaBar,
+                ProactiveTalkingRate = (int) (ntbProactiveTalkingRate.Value ?? 20.0) , // Default to 20% if not set
             };
 
             if (plugin.MW.TalkBoxCurr.APIName == "ChatOllama" )

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VpetChatWithOllama", "VpetC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pre-test", "Test\pre-test.csproj", "{E8CD9119-89CE-4991-94D7-D984B0CF7987}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VpetMediaBar", "..\VpetMediaBar\VpetMediaBar\VpetMediaBar.csproj", "{AE1BA7C4-20F1-411F-8C6A-FA34D1E9950D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{E8CD9119-89CE-4991-94D7-D984B0CF7987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8CD9119-89CE-4991-94D7-D984B0CF7987}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8CD9119-89CE-4991-94D7-D984B0CF7987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1BA7C4-20F1-411F-8C6A-FA34D1E9950D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1BA7C4-20F1-411F-8C6A-FA34D1E9950D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1BA7C4-20F1-411F-8C6A-FA34D1E9950D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1BA7C4-20F1-411F-8C6A-FA34D1E9950D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

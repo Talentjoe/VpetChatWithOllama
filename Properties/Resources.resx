@@ -171,4 +171,13 @@
   <data name="ProactiveConversationsPrompt" xml:space="preserve">
     <value>Proactive Conversations Prompt</value>
   </data>
+  <data name="PromptCount" xml:space="preserve">
+    <value>Prompt Count</value>
+  </data>
+  <data name="ProactiveTalkingRate" xml:space="preserve">
+    <value>Proactive Talking Rate</value>
+  </data>
+  <data name="SupportMediaBar" xml:space="preserve">
+    <value>Support Media Bar</value>
+  </data>
 </root>

@@ -171,4 +171,13 @@
   <data name="ProactiveConversationsPrompt" xml:space="preserve">
     <value>主动对话提示词</value>
   </data>
+  <data name="PromptCount" xml:space="preserve">
+    <value>提示词使用量</value>
+  </data>
+  <data name="ProactiveTalkingRate" xml:space="preserve">
+    <value>主动对话频率</value>
+  </data>
+  <data name="SupportMediaBar" xml:space="preserve">
+    <value>支持音乐信息</value>
+  </data>
 </root>

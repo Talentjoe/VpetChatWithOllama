@@ -72,26 +72,27 @@ namespace VpetChatWithOllama
         public OllamaChatCore(PluginInformations.PluginSettings settings, Dictionary<string, Func<string>> rp = default)
         {
             this._replacementMapping = rp;
-            this._moduleName = settings.moduleName;
-            this._terminal = settings.url;
+            this._moduleName = settings.ModuleName;
+            this._terminal = settings.Url;
             this._supportTool = false;
             this._chattingHistory = new List<Dictionary<string, string>>();
-            this._prompt = settings.prompt;
-            this._enhancePrompt = settings.enhancePrompt;
-            this.TokenCount = settings.tokenCount;
+            this._prompt = settings.Prompt;
+            this._enhancePrompt = settings.EnhancePrompt;
+            this.TokenCount = settings.TokenCount;
+            this.PromptCount = settings.PromptCount;
             this.PromptCount = 0;
             this._customizedPrompts = new List<Func<string>>();
-            this._promptBeforeUserInput = settings.promptBeforeUserInput;
+            this._promptBeforeUserInput = settings.PromptBeforeUserInput;
 
             _sharedClient = new()
             {
                 BaseAddress = new Uri(_terminal),
             };
 
-            if (settings.chatHistory != "")
+            if (settings.ChatHistory != "")
             {
                 _chattingHistory =
-                    JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(settings.chatHistory) ?? 
+                    JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(settings.ChatHistory) ?? 
                         new List<Dictionary<string, string>>();
             }
         }
@@ -101,7 +102,7 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <returns>The list of module name</returns>
         /// <exception cref="Exception">When not able to get the response</exception>
-        public async Task<List<string>> getAllModules()
+        public async Task<List<string>> GetAllModules()
         {
             try
             {
@@ -126,7 +127,7 @@ namespace VpetChatWithOllama
         /// </summary>
         /// <returns>The list of module name</returns>
         /// <exception cref="Exception">When not able to get the response</exception>
-        public static async Task<List<string>> getAllModules(string url)
+        public static async Task<List<string>> GetAllModules(string url)
         {
             try
             {
@@ -167,7 +168,8 @@ namespace VpetChatWithOllama
         /// give the next sentence to the chat API, with history included
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
-        /// <returns></returns>
+        /// <param name="isSystem">If the next sentence is from system</param>
+        /// <returns>Generated response</returns>
         public async Task<string> Chat(string nextSentence,bool isSystem = false)
         {
             StringContent stringContent = new(GenerateContent(nextSentence, false,role: isSystem ? "system" : "user"), Encoding.UTF8, "application/json");
@@ -184,7 +186,9 @@ namespace VpetChatWithOllama
         /// give the next sentence to the chat API, with history included, and stream the response
         /// </summary>
         /// <param name="nextSentence"> Next sentence user inputs</param>
-        /// <returns></returns>
+        /// <param name="updateTrigger">The task that invoke generated sentence</param>
+        /// <param name="isSystem">If the sentence is from system</param>
+        /// <returns>Generated response</returns>
         public async Task<string> Chat(string nextSentence, Action<string> updateTrigger, bool isSystem = false)
         {
             StringContent postRequests = new(
