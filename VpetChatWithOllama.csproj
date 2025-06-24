@@ -50,7 +50,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <ProjectReference Include="..\VpetMediaBar\VpetMediaBar\VpetMediaBar.csproj" />
+	  <ProjectReference Include="..\VpetMediaBar\MediaClient\MediaClient.csproj" />
 	</ItemGroup>
 
 	<Target Name="CopyResources" AfterTargets="Build">

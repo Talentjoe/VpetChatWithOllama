@@ -113,7 +113,7 @@ namespace VpetChatWithOllama
             try
             {
                 var a = MW.DynamicResources["MediaInfo"];
-                if (a is MediaClient mediaClient)
+                if (a is MediaClient.MediaClient mediaClient)
                 {
                     mediaClient.OnMediaInfoReceived += (info)=>
                     {

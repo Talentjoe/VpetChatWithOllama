@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using LinePutScript.Localization.WPF;
+using MediaClient;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -42,7 +43,7 @@ public class ChatWithOllamaAPI : TalkBox
         }
     }
 
-    public async void ResponseToMusic(MediaClient.MediaInfo info)
+    public async void ResponseToMusic(MediaPropertiesSerializableData info)
     {
         if (!ProactiveGeneratePossible())
             return;
@@ -50,7 +51,8 @@ public class ChatWithOllamaAPI : TalkBox
         Task.Delay(500).Wait();
 
         if (mainPlugin.settings.CanSupportMediaBar && mainPlugin.settings.SupportMediaBar &&
-            Random.Shared.Next(0,100) < mainPlugin.settings.ProactiveTalkingRate)
+            Random.Shared.Next(0,100) < mainPlugin.settings.ProactiveTalkingRate &&
+            info != null && !string.IsNullOrEmpty(info.Title) && !string.IsNullOrEmpty(info.Artist))
         {
             GenText("User is listening to " + info.Title + " by " + info.Artist +
                     ". Please respond to it in " + CultureInfo.CurrentCulture?.EnglishName + ".");
