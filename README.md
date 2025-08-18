@@ -30,7 +30,7 @@ steam创意工坊链节：https://steamcommunity.com/sharedfiles/filedetails/?id
 目前时间是:{CurTime}, 你的名字是{Name}
 可以通过点击Prompt下方的 测试提示词 按钮 测试是否能正确引用。
 
-Currently you are allow to use following key word as prompt.
+In current version you are allow to use following key word as prompt.
 - "{Name}“: Pet name
 - "{CurTime}":Current Time
 - "{Money}": Current money
