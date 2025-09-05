@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using LinePutScript.Localization.WPF;
 using MediaClient;
+using MediaClientDataInterFace;
 using VPet_Simulator.Core;
 using VPet_Simulator.Windows.Interface;
 
@@ -102,7 +103,6 @@ public class ChatWithOllamaAPI : TalkBox
                     {
                         if (first)
                         {
-                            DisplayThinkToSayRnd(sayInfoWithStream);
                             first = false;
                         }
 
@@ -114,7 +114,8 @@ public class ChatWithOllamaAPI : TalkBox
                         showText = true;
                     }
                 };
-
+                
+                DisplayThinkToSayRnd(sayInfoWithStream);
                 await mainPlugin.COllama.Chat(text, action, isSystem);
                 sayInfoWithStream.FinishGenerate();
             }

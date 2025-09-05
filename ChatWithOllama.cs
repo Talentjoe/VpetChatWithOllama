@@ -109,7 +109,7 @@ namespace VpetChatWithOllama
                 await Task.Delay(200);
                 waitMs += 200;
             }
-
+            
             try
             {
                 var a = MW.DynamicResources["MediaInfo"];

@@ -132,7 +132,19 @@
           }
         }
       },
+      "DataInterface/1.0.0": {
+        "runtime": {
+          "DataInterface.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "MediaClient/1.0.0": {
+        "dependencies": {
+          "DataInterface": "1.0.0",
+          "Newtonsoft.Json": "13.0.3"
+        },
         "runtime": {
           "MediaClient.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -217,6 +229,11 @@
       "sha512": "sha512-aDypIA1EYM/MJMaY7TOIEAc6bgEVjyHwz4+dqz/pKAtoyMAuUpGB2lf4i27iJc6pAegcljBA+NTSIOBeswcY+Q==",
       "path": "vpet-simulator.windows.interface/1.1.0.50",
       "hashPath": "vpet-simulator.windows.interface.1.1.0.50.nupkg.sha512"
+    },
+    "DataInterface/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     },
     "MediaClient/1.0.0": {
       "type": "project",
